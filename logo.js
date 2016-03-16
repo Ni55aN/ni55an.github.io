@@ -4,7 +4,8 @@ Logo.DURATION = 4000;
 Logo.canvas = null;
 Logo.ctx = null;
 Logo.startTime = null;
-
+Logo.debug = false;
+Logo.page = null;
 var SVGlogo = null;
 var Background = null;
 var mask = null;
@@ -12,14 +13,21 @@ var mask = null;
 
 Logo.init = function(){
 	
+	Logo.page = document.getElementById("logoPage");
 	Logo.canvas = document.getElementById('animLogo');	
 	Logo.ctx = Logo.canvas.getContext('2d');
+	
+	var refreshButton = document.createElement('img');
+	refreshButton.setAttribute('class','reloadButton');
+	refreshButton.src="refresh.png";
+	refreshButton.addEventListener('click',Logo.refresh,false);
+	Logo.page.appendChild(refreshButton);
+	
 	
 	Logo.canvas.addEventListener('mousedown',function(e){
 		
 	
-		if(!mask.isEditMode)return;
-		
+		if(mask.isEditMode && Logo.debug){
 		
 			var svgCoordinatesX = (e.offsetX - SVGlogo.getOffsetX())/SVGlogo.getSize()*512;
 			var svgCoordinatesY = (e.offsetY - SVGlogo.getOffsetY())/SVGlogo.getSize()*512;
@@ -31,32 +39,40 @@ Logo.init = function(){
 		
 			if(svgCoordinatesX > 0 && svgCoordinatesY > 0 && svgCoordinatesX < 512 && svgCoordinatesY < 512)
 				mask.addPoint(svgCoordinatesX,svgCoordinatesY);	
-		
-	
+		}
 		
 	},false);
 	
 	
 	Logo.canvas.addEventListener('mousemove',function(e){
 		
-		if(mask.pickedPoint == null)return;
 		
-		var svgCoordinatesX = (e.offsetX - SVGlogo.getOffsetX())/SVGlogo.getSize()*512;
-		var svgCoordinatesY = (e.offsetY - SVGlogo.getOffsetY())/SVGlogo.getSize()*512;
-			
-		mask.setPoint(mask.pickedPoint,svgCoordinatesX,svgCoordinatesY);
+		if(mask.pickedPoint != null && Logo.debug){
+		
+			var svgCoordinatesX = (e.offsetX - SVGlogo.getOffsetX())/SVGlogo.getSize()*512;
+			var svgCoordinatesY = (e.offsetY - SVGlogo.getOffsetY())/SVGlogo.getSize()*512;
+				
+			mask.setPoint(mask.pickedPoint,svgCoordinatesX,svgCoordinatesY);
+		
+		}
+		
 		
 		
 	},false);
 	
 	Logo.canvas.addEventListener('mouseup',function(e){
 		
-		mask.unpick();
+		if(Logo.debug)
+			mask.unpick();
 		
 	},false);
 	
+	
+	
 	window.addEventListener('keydown',function(e){
 
+		if(!Logo.debug)return;
+		
 		if(e.keyCode == 16){
 			
 			if(mask.isEditMode)
@@ -84,32 +100,42 @@ Logo.init = function(){
 	
 	window.addEventListener('resize',Logo.resize,false);
 	
-	
+	mask = new MaskPainter();	
+	Background = new BinaryBackground();
 	
 	setTimeout(function(){
-	SVGlogo = new SVG('logo.svg',function(){
+			
 		
-		mask = new MaskPainter();	
-		Logo.resize();
+		SVGlogo = new SVG('logo.svg',function(){
+			
 		
-		Background = new BinaryBackground(Logo.canvas.width,Logo.canvas.height);
+			Logo.resize();
+			
+			Logo.startTime = new Date().getTime();
+			Logo.render();
 		
+		});	
 		
-		Logo.startTime = new Date().getTime();
-		Logo.render();
-	
-	});	
 	},300);
+}
+
+Logo.refresh = function(){
+	
+	Logo.startTime = new Date().getTime();
+	Background.reinit();
+	mask.clear();
+	
 }
 
 Logo.resize = function(){
 		
 		
-		Logo.canvas.width=window.innerWidth;
-		Logo.canvas.height=window.innerHeight;
-		
+		Logo.canvas.width=Logo.page.clientWidth;
+		Logo.canvas.height=Logo.page.clientHeight;
 		var size = Logo.canvas.width*0.1+200;
 		SVGlogo.setSize(size);
+		
+		Background.reinit();
 		
 };
 
@@ -133,64 +159,75 @@ Logo.render = function(){
 	SVGlogo.render();	
 }
 	
-var BinaryBackground = function(w,h){
+var BinaryBackground = function(){
 	
 	var FONT_SIZE = 20;
-	var FONT_FAMILY = ' "Baskerville Old Face"';
+	var LINE_HEIGHT = 22;
+	var FONT_FAMILY = '"Baskerville Old Face"';
 	var FONT_COLOR = "#c7c7c7";
-	var CHAR_WIDTH = [13,9];
+	var CHAR_WIDTH = [14,10];
 	var START_OFFSET = 5;
 	
+	var stringMask = 'Vitaliy Stolyarov ';
 	var isDone = false;
 	
-	var charsCount = Math.ceil(h/FONT_SIZE*w/Math.min(CHAR_WIDTH[0],CHAR_WIDTH[1])/8);
-	var text = new Uint8Array(charsCount);
-	var offsetW = new Uint16Array(charsCount*8);
-	var offsetH = new Uint16Array(charsCount*8);
-	var hidedText = [];
-	var stringMask = 'Vitaliy Stolyarov ';
-
-	var binCanvas = document.createElement('canvas');
-	binCanvas.width = Logo.canvas.width;
-	binCanvas.height = Logo.canvas.height;
+	var charsCount;
+	var text;
+	var offsetW;
+	var offsetH;
+	var hidedText;
 	
+	var binCanvas = document.createElement('canvas');
 	var binctx = binCanvas.getContext('2d');
-	binctx.fillStyle = FONT_COLOR;
-	binctx.font = FONT_SIZE+"px "+FONT_FAMILY;
-		
+
 	var getTextBit = function(index){
 		
 		return text[Math.floor(index/8)] >> index%8 & 1;
 	}
 
-	for(var i=0,w=START_OFFSET,h=FONT_SIZE;		i<text.length;	i++)
-	{
-		text[i] = stringMask.charCodeAt(i%stringMask.length);
+	
+	function initChars(){
 		
-		for(var j=7;j>=0;j--){
+		
+		charsCount = Math.ceil(binCanvas.height/FONT_SIZE*binCanvas.width/Math.min(CHAR_WIDTH[0],CHAR_WIDTH[1])/8);
+		text = new Uint8Array(charsCount);
+		offsetW = new Uint16Array(charsCount*8);
+		offsetH = new Uint16Array(charsCount*8);
+		hidedText = [];
+		
+		for(var i=0,w=START_OFFSET,h=LINE_HEIGHT;		i<text.length;	i++)
+		{
+			text[i] = stringMask.charCodeAt(i%stringMask.length);
 			
-			var bitIndex = i*8+j;
-			
-			hidedText.push(bitIndex);
-			
-			var bit = getTextBit(bitIndex);
-			
-			if(w + CHAR_WIDTH[bit] > Logo.canvas.width){
+			for(var j=7;j>=0;j--){
 				
-				h+=FONT_SIZE;
-				w=START_OFFSET;
+				var bitIndex = i*8+j;
+				
+				hidedText.push(bitIndex);
+				
+				var bit = getTextBit(bitIndex);
+				
+				if(w + CHAR_WIDTH[bit] > Logo.canvas.width){
+					
+					h+=LINE_HEIGHT;
+					w=START_OFFSET;
+				}
+				
+				offsetW[bitIndex] = w;
+				offsetH[bitIndex] = h;
+					
+				w+=CHAR_WIDTH[bit];
+					
 			}
-			
-			offsetW[bitIndex] = w;
-			offsetH[bitIndex] = h;
-				
-			w+=CHAR_WIDTH[bit];
-				
 		}
+		
+		binctx.fillStyle = FONT_COLOR;
+		binctx.font = FONT_SIZE+"px "+FONT_FAMILY;
 	}
 	
 	var drawBits = function(list){
-		
+	
+	
 		var bitIndex = null;
 		
 		for(var i = 0;i<list.length;i++)
@@ -249,6 +286,7 @@ var BinaryBackground = function(w,h){
 		ctx.fillRect(0,0,Logo.canvas.width,Logo.canvas.height);
 	}
 	
+	
 	this.render = function(){
 		
 		if(isDone)true;
@@ -257,6 +295,17 @@ var BinaryBackground = function(w,h){
 		drawBits(drawlist);
 		overlayGradient();
 	}
+	
+	this.reinit = function(){
+		
+		binCanvas.width=Logo.canvas.width;
+		binCanvas.height=Logo.canvas.height;
+		
+		binctx.clearRect(0,0,binCanvas.width,binCanvas.height);
+		initChars();
+		
+	}
+	
 }
 
 
@@ -278,17 +327,21 @@ var MaskPainter = function(){
 	
 	
 	
-	this.points = [[31.21951219512195,201.3658536585366],[32.78048780487805,260.6829268292683],[31.21951219512195,313.7560975609756],[20.29268292682927,195.1219512195122],[65.5609756097561,254.4390243902439],[113.95121951219512,316.8780487804878],[99.90243902439025,202.9268292682927],[99.90243902439025,254.4390243902439],[101.46341463414635,307.5121951219512],[140.4878048780488,232.58536585365854],[138.9268292682927,271.609756097561],[140.4878048780488,310.6341463414634],[156.09756097560975,198.2439024390244],[143.609756097561,213.85365853658536],[124.8780487804878,234.14634146341464],[167.02439024390245,209.9512195121951],[165.46341463414635,239.609756097561],[167.02439024390245,261.4634146341463],[156.09756097560975,249.7560975609756],[287.219512195122,280.9756097560976],[149.85365853658536,301.2682926829268],[167.02439024390245,223.21951219512195],[193.5609756097561,227.90243902439025],[227.90243902439025,229.46341463414635],[243.5121951219512,206.82926829268294],[240.390243902439,236.4878048780488],[243.5121951219512,259.9024390243902],[232.58536585365854,251.3170731707317],[352.780487804878,274.7317073170732],[221.65853658536585,305.9512195121951],[241.9512195121951,226.34146341463415],[268.4878048780488,229.46341463414635],[298.1463414634146,229.46341463414635],[360.5853658536585,248.1951219512195],[318.4390243902439,231.02439024390245],[320,277.8536585365854],[316.8780487804878,268.4878048780488],[330.9268292682927,315.3170731707317],[368.390243902439,285.6585365853659],[374.6341463414634,232.58536585365854],[371.5121951219512,285.6585365853659],[373.0731707317073,309.0731707317073],[412.0975609756098,204.4878048780488],[413.6585365853659,257.5609756097561],[412.0975609756098,310.6341463414634],[399.609756097561,196.6829268292683],[441.7560975609756,248.1951219512195],[488.5853658536585,310.6341463414634],[482.3414634146341,193.5609756097561],[479.219512195122,257.5609756097561],[485.4634146341463,316.8780487804878],[54.63414634146341,246.6341463414634],[92.09756097560975,443.3170731707317],[271.609756097561,449.5609756097561],[245.0731707317073,448],[427.7073170731707,440.1951219512195],[448,263.8048780487805],[448,266.9268292682927],[443.3170731707317,60.8780487804878],[227.90243902439025,62.4390243902439],[266.9268292682927,59.31707317073171],[76.48780487804878,84.29268292682927],[67.1219512195122,248.1951219512195]];
-	this.isEditMode = false;
+	this.points = [[31.21951219512195,201.3658536585366],[32.78048780487805,260.6829268292683],[31.21951219512195,313.7560975609756],[20.29268292682927,195.1219512195122],[65.5609756097561,254.4390243902439],[113.95121951219512,316.8780487804878],[99.90243902439025,202.9268292682927],[99.90243902439025,254.4390243902439],[101.46341463414635,307.5121951219512],[140.4878048780488,232.58536585365854],[138.9268292682927,271.609756097561],[140.4878048780488,310.6341463414634],[156.09756097560975,198.2439024390244],[143.609756097561,213.85365853658536],[124.8780487804878,234.14634146341464],[167.02439024390245,209.9512195121951],[165.46341463414635,239.609756097561],[167.02439024390245,261.4634146341463],[156.09756097560975,249.7560975609756],[287.219512195122,280.9756097560976],[149.85365853658536,301.2682926829268],[167.02439024390245,223.21951219512195],[193.5609756097561,227.90243902439025],[227.90243902439025,229.46341463414635],[243.5121951219512,206.82926829268294],[240.390243902439,236.4878048780488],[243.5121951219512,259.9024390243902],[232.58536585365854,251.3170731707317],[352.780487804878,274.7317073170732],[221.65853658536585,305.9512195121951],[241.9512195121951,226.34146341463415],[268.4878048780488,229.46341463414635],[298.1463414634146,229.46341463414635],[360.5853658536585,248.1951219512195],[318.4390243902439,231.02439024390245],[320,277.8536585365854],[316.8780487804878,268.4878048780488],[330.9268292682927,315.3170731707317],[368.390243902439,285.6585365853659],[374.6341463414634,232.58536585365854],[371.5121951219512,285.6585365853659],[373.0731707317073,309.0731707317073],[408.8943338437979,203.46707503828483],[413.6585365853659,257.5609756097561],[412.0306278713629,311.66921898928024],[399.609756097561,196.6829268292683],[441.7560975609756,248.1951219512195],[488.5853658536585,310.6341463414634],[482.3414634146341,193.5609756097561],[479.219512195122,257.5609756097561],[485.4634146341463,316.8780487804878],[54.63414634146341,246.6341463414634],[92.09756097560975,443.3170731707317],[271.609756097561,449.5609756097561],[245.0731707317073,448],[427.7073170731707,440.1951219512195],[448,263.8048780487805],[451.2343032159265,259.9203675344564],[427.71209800918837,67.03828483920367],[227.90243902439025,62.4390243902439],[266.9268292682927,59.31707317073171],[76.48780487804878,84.29268292682927],[67.1219512195122,248.1951219512195]];	this.isEditMode = false;
 	this.pickedPoint = null;
 	
 	var last_duration = 0;
+	
+	this.clear = function(){
+		
+		ctx.clearRect(0,0,maskCanvas.width,maskCanvas.height);
+	}
 	
 	this.addPoint = function(x,y){
 		
 		_this.points.push([x,y]);
 		
-		mask.pickedPoint = _this.points.length-1;
+		_this.pickedPoint = _this.points.length-1;
 	}
 	
 	
