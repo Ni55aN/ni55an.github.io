@@ -72,7 +72,8 @@ getSkills({
         "Cmake": 0,
         "Git": 0,
         "JEE": 0,
-        ".NET/WPF": 0.5
+        ".NET/WPF": 0.5,
+        "Emscripten":0
     },
     "25 Nov 2015": {
         "Git": 0.25,
@@ -84,6 +85,7 @@ getSkills({
         "SQL": 0.4,
         "MySQL/SQLite": 0.5,
         "JavaScript": 0.75,
+        "Emscripten":0.2,
         "LESS/SCSS": 0
     },
     "8 Feb 2016": {
@@ -106,7 +108,8 @@ getSkills({
         "OpenGL/WebGL": 0.55,
         "Blender": 0.35,
         "LESS/SCSS": 0.45,
-        "Cmake":0.45
+        "Cmake":0.45,
+        "Emscripten":0.4
     },
     "10 Jun 2016": {
         "Angular Light": 0,
