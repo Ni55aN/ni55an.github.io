@@ -1,0 +1,5 @@
+ getCommands({"help":"---<br> loc - get location <br> whoami - get nickname <br> email - get email <br> ---",
+	"loc":"Kharkiv, Ukraine",
+  "whoami":"Ni55aN",
+  "email":"HuCCaH@gmail.com"
+});
