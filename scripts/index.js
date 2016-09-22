@@ -63,7 +63,7 @@ var PageScroll = {
         var delta_time = PageScroll.compensate_time(time - PageScroll.last_time);
 
         if (PageScroll.animation)
-            document.body.scrollTop += (delta > 0 ? Math.ceil(delta) : Math.floor(delta)) * delta_time;
+            document.body.scrollTop +=  Math.floor(delta) * delta_time;
 
 
 
