@@ -5,6 +5,8 @@ var PageScroll = {
     animation: true,
     current: 0,
     SPEED: 1 / 10,
+	SCROLL_MIN_DELTA: 200,
+	sum_delta:0,
     top: 0,
     last_time: 0,
     windowHeight: 0,
@@ -107,12 +109,20 @@ var PageScroll = {
         e.preventDefault();
 
         var delta = e.deltaY ? e.deltaY : e.detail;
-
-        if (delta < 0)
-            PageScroll.up();
-        else
-            PageScroll.down();
-
+		
+		if(PageScroll.sum_delta==0)
+		{
+			if (delta < 0)
+				PageScroll.up();
+			else
+				PageScroll.down();		
+		}
+		
+		PageScroll.sum_delta+=delta;
+		
+		if(Math.abs(PageScroll.sum_delta) >= PageScroll.SCROLL_MIN_DELTA)
+			PageScroll.sum_delta = 0;
+	
 
     },
     resize: function(e) {
