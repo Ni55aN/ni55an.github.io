@@ -1,5 +1,6 @@
 var mat4 = {};
 var vec3 = {};
+var vec2 = {};
 
 mat4.create = function(){
 	
@@ -219,14 +220,65 @@ mat4.lookAt = function(eye, target, up) {
     ];
 }
 
-vec3.dot = function(a, b) {
 
-    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-}
+vec3.add = function(a, b) {
+
+    var v = [];
+
+    v[0] = a[0] + b[0];
+    v[1] = a[1] + b[1];
+    v[2] = a[2] + b[2];
+
+    return v;
+};
+
+vec3.distance = function(a, b) {
+
+    return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2) + Math.pow(a[2] - b[2], 2));
+};
+
+vec2.distance = function(a, b) {
+
+    return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2));
+};
+
+
+vec3.mul = function(v, scalar) {
+
+    var vr = [];
+
+    vr[0] = v[0] * scalar;
+    vr[1] = v[1] * scalar;
+    vr[2] = v[2] * scalar;
+
+    return vr;
+
+};
 
 vec3.sub = function(a, b) {
 
     return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+}
+
+vec3.normal = function(a, b, c) {
+
+
+    var cb = vec3.sub(c, b);
+    var ab = vec3.sub(a, b);
+    var abc = vec3.cross(cb, ab);
+
+    if (abc[2] < 0) {
+        abc[0] *= -1;
+        abc[1] *= -1;
+        abc[2] *= -1;
+    }
+
+    return vec3.normalize(abc);
+};
+
+vec3.dot = function(a, b) {
+
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
 vec3.normalize = function(v) {

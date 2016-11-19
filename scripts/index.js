@@ -341,102 +341,6 @@ var Skills = {
 };
 
 
-Math.cross = function(a, b) {
-
-    var v = [];
-
-    v[0] = a[1] * b[2] - a[2] * b[1];
-    v[1] = a[2] * b[0] - a[0] * b[2];
-    v[2] = a[0] * b[1] - a[1] * b[0];
-
-    return v;
-};
-
-Math.add = function(a, b) {
-
-    var v = [];
-
-    v[0] = a[0] + b[0];
-    v[1] = a[1] + b[1];
-    v[2] = a[2] + b[2];
-
-    return v;
-};
-
-Math.distance = function(a, b) {
-
-    return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2) + Math.pow(a[2] - b[2], 2));
-};
-
-Math.distance2D = function(a, b) {
-
-    return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2));
-};
-
-Math.sign = function(val) {
-
-    return val < 0 ? -1 : 1;
-};
-
-Math.sub = function(a, b) {
-
-    var v = [];
-
-    v[0] = a[0] - b[0];
-    v[1] = a[1] - b[1];
-    v[2] = a[2] - b[2];
-
-    return v;
-};
-
-
-Math.normalize = function(v) {
-
-    var vr = [];
-
-    var l = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-
-    vr[0] = v[0] / l;
-    vr[1] = v[1] / l;
-    vr[2] = v[2] / l;
-
-    return vr;
-};
-
-Math.mul = function(v, scalar) {
-
-    var vr = [];
-
-    vr[0] = v[0] * scalar;
-    vr[1] = v[1] * scalar;
-    vr[2] = v[2] * scalar;
-
-    return vr;
-
-};
-
-Math.normal = function(a, b, c) {
-
-
-    var cb = Math.sub(c, b);
-    var ab = Math.sub(a, b);
-    var abc = Math.cross(cb, ab);
-
-    if (abc[2] < 0) {
-        abc[0] *= -1;
-        abc[1] *= -1;
-        abc[2] *= -1;
-    }
-
-    return Math.normalize(abc);
-};
-
-
-Math.dotProduct = function(a, b) {
-
-    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-};
-
 var Triangle = function(i1, i2, i3) {
 
     var v = Background.vertices;
@@ -453,7 +357,7 @@ var Triangle = function(i1, i2, i3) {
     }).join('_');
 
     this.indices = inds;
-    this.normal = Math.normal(v[i1], v[i2], v[i3]);
+    this.normal = vec3.normal(v[i1], v[i2], v[i3]);
 
     //	this.normal[0]*=-1;
     //	this.normal[1]*=-1;
@@ -547,7 +451,7 @@ var Background = {
         var t = Background.triangles;
 
         for (var i = 0; i < t.length; i += 3)
-            n.push(Math.normal(v[t[i]], v[t[i + 1]], v[t[i + 2]]));
+            n.push(vec3.normal(v[t[i]], v[t[i + 1]], v[t[i + 2]]));
 
     },
     drawLine: function(img, v0, v1) {
@@ -648,11 +552,11 @@ var Background = {
 			var mouse = vec3.applyProjection(Background.mousePosition, mvp);
 			mouse[0]*=-1;
 			
-            var triangle_center = Math.mul(Math.add(p1, Math.add(p2, p3)), 1 / 3);
+            var triangle_center = vec3.mul(vec3.add(p1, vec3.add(p2, p3)), 1 / 3);
 				
-            var direction = Math.normalize(Math.sub(mouse,triangle_center));
+            var direction = vec3.normalize(vec3.sub(mouse,triangle_center));
 			
-            var shine = Math.ceil(230 + 20 * Math.dotProduct(direction, n[j]));
+            var shine = Math.ceil(230 + 20 * vec3.dot(direction, n[j]));
 
 			p1=vec3.screenSpace(p1, w, h);
 			p2=vec3.screenSpace(p2, w, h);
