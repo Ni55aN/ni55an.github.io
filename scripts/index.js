@@ -5,8 +5,8 @@ var PageScroll = {
     animation: true,
     current: 0,
     SPEED: 1 / 10,
-	SCROLL_MIN_DELTA: 200,
-	sum_delta:0,
+    SCROLL_MIN_DELTA: 200,
+    sum_delta: 0,
     top: 0,
     last_time: 0,
     windowHeight: 0,
@@ -65,7 +65,7 @@ var PageScroll = {
         var delta_time = PageScroll.compensate_time(time - PageScroll.last_time);
 
         if (PageScroll.animation)
-            document.body.scrollTop +=  Math.floor(delta) * delta_time;
+            document.body.scrollTop += Math.floor(delta) * delta_time;
 
 
 
@@ -109,20 +109,19 @@ var PageScroll = {
         e.preventDefault();
 
         var delta = e.deltaY ? e.deltaY : e.detail;
-		
-		if(PageScroll.sum_delta==0)
-		{
-			if (delta < 0)
-				PageScroll.up();
-			else
-				PageScroll.down();		
-		}
-		
-		PageScroll.sum_delta+=delta;
-		
-		if(Math.abs(PageScroll.sum_delta) >= PageScroll.SCROLL_MIN_DELTA)
-			PageScroll.sum_delta = 0;
-	
+
+        if (PageScroll.sum_delta == 0) {
+            if (delta < 0)
+                PageScroll.up();
+            else
+                PageScroll.down();
+        }
+
+        PageScroll.sum_delta += delta;
+
+        if (Math.abs(PageScroll.sum_delta) >= PageScroll.SCROLL_MIN_DELTA)
+            PageScroll.sum_delta = 0;
+
 
     },
     resize: function(e) {
@@ -466,10 +465,11 @@ String.prototype.addSlashes = function() {
 
 
 var Background = {
-    DENSITY: 40,
-    DEPTH: 35,
+    DENSITY: 0.1,
+    DEPTH: 0.04,
     OFFSET: 15,
     SSAO_SHADENESS: 2.0,
+	SENSITIVITY:0.2,
     ctx: null,
     canvas: null,
     ssao_ctx: null,
@@ -477,8 +477,8 @@ var Background = {
     vertices: null,
     triangles: null,
     normals: null,
-    mouseOffset: [0, 0, 0],
     mousePosition: [0, 0, 0],
+	perspectiveMatrix: mat4.perspective(Math.PI * 0.3, 1, 0.0001, 10000),
     resize: function(e) {
 
 
@@ -493,8 +493,7 @@ var Background = {
     },
     onUpdate: function(e) {
 
-        Background.mouseOffset = Math.normalize([2 * e.clientX / Background.canvas.width - 1, 2 * e.clientY / Background.canvas.height - 1, 1]);
-        Background.mousePosition = [e.clientX, e.clientY, 1];
+        Background.mousePosition = [e.clientX / Background.canvas.width * 2 - 1,  e.clientY / Background.canvas.height * 2 - 1, 1];
 
         Background.redraw();
     },
@@ -502,9 +501,9 @@ var Background = {
 
         var _this = this;
 
-        var wcount = Math.ceil(Background.canvas.width / Background.DENSITY);
-        var hcount = Math.ceil(Background.canvas.height / Background.DENSITY);
-
+        var wcount = Math.ceil(Background.canvas.width / 10);
+        var hcount = Math.ceil(Background.canvas.height / 10);
+        console.log(wcount, hcount)
         var wstep = Background.canvas.width / (wcount - 1);
         var hstep = Background.canvas.height / (hcount - 1);
 
@@ -518,26 +517,31 @@ var Background = {
         var v = Background.vertices;
         var n = Background.normals;
 
+        v.push([-1, -1, 0]);
+        v.push([1, -1, 0]);
+        v.push([-1, 1, 0]);
+        v.push([1, 1, 0]);
+
+        for (var i = 0; i < wcount; i++)
+            for (var j = 0; j < hcount; j++) {
 
 
+                var vj = [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * Background.DEPTH];
 
-        for (var tries = 0; tries < 12; tries++) {
+                var valid = true;
 
-            var vj = [w * (Math.random() * 1.2 - 0.1), h * (Math.random() * 1.2 - 0.1), Math.random() * Background.DEPTH];
-
-            var valid = true;
-
-            for (var i = 0; i < v.length; i++)
-                if (Math.sqrt(Math.pow(v[i][0] - vj[0], 2) + Math.pow(v[i][1] - vj[1], 2)) < this.DENSITY) {
-                    valid = false;
-                    break;
+                for (var k = 0; k < v.length; k++)
+                    if (Math.sqrt(Math.pow(w/h*(v[k][0] - vj[0]), 2) + Math.pow(v[k][1] - vj[1], 2)) < this.DENSITY) {
+                        valid = false;
+                        break;
+                    }
+                if (valid) {
+                    v.push(vj);
+                    tries = 0;
                 }
-
-            if (valid) {
-                v.push(vj);
-                tries = 0;
             }
-        }
+
+
 
         Background.triangles = Delaunay.triangulate(v);
         var t = Background.triangles;
@@ -606,17 +610,16 @@ var Background = {
 
         var ssao_data = ssao_ctx.createImageData(w, h);
 
+        var view = mat4.lookAt([0,0,-1], [0, 0, 0], [0, 1, 0]);
+        var model = mat4.multiply(
+						mat4.makeRotationX(h/w*Background.SENSITIVITY*Background.mousePosition[1]),
+						mat4.makeRotationY(Background.SENSITIVITY*Background.mousePosition[0])
+					);
+		
+        var vp = mat4.multiply(Background.perspectiveMatrix, view);
+		var mvp = mat4.multiply(vp, model);
+		
         for (var i = 0, j = 0; i < t.length; i += 3, j++) {
-
-            var middle_point = Math.mul(Math.add(v[t[i + 2]], Math.add(v[t[i + 0]], v[t[i + 1]])), 1 / 3);
-
-            var direction = Math.normalize(Math.mul(Math.sub(middle_point, Background.mousePosition), 90));
-
-            var shine = Math.ceil(240 + 15 * Math.dotProduct(direction, n[j]));
-
-
-            var ox = Background.mouseOffset[0] / Background.DEPTH * Background.OFFSET;
-            var oy = Background.mouseOffset[1] / Background.DEPTH * Background.OFFSET;
 
             var x1 = v[t[i + 0]][0];
             var y1 = v[t[i + 0]][1];
@@ -630,10 +633,31 @@ var Background = {
             var y3 = v[t[i + 2]][1];
             var d3 = v[t[i + 2]][2];
 
-            var p1 = [x1 + d1 * ox, y1 + d1 * oy, d1];
-            var p2 = [x2 + d2 * ox, y2 + d2 * oy, d2];
-            var p3 = [x3 + d3 * ox, y3 + d3 * oy, d3];
+			
+			var p1 = vec3.applyProjection([x1, y1, d1], mvp);
+            var p2 = vec3.applyProjection([x2, y2, d2], mvp);
+            var p3 = vec3.applyProjection([x3, y3, d3], mvp);
 
+			
+			if (p1[2] < -1 || p2[2] < -1 || p3[2] < -1 || p1[2] > 1 || p2[2] > 1 || p3[2] > 1) continue;
+			 
+			p1[2]=d1;
+			p2[2]=d2;
+			p3[2]=d3;
+			
+			var mouse = vec3.applyProjection(Background.mousePosition, mvp);
+			mouse[0]*=-1;
+			
+            var triangle_center = Math.mul(Math.add(p1, Math.add(p2, p3)), 1 / 3);
+				
+            var direction = Math.normalize(Math.sub(mouse,triangle_center));
+			
+            var shine = Math.ceil(230 + 20 * Math.dotProduct(direction, n[j]));
+
+			p1=vec3.screenSpace(p1, w, h);
+			p2=vec3.screenSpace(p2, w, h);
+			p3=vec3.screenSpace(p3, w, h);
+		
             ctx.fillStyle = "rgba(" + shine + "," + shine + "," + shine + ",1)";
 
 
@@ -653,17 +677,6 @@ var Background = {
 
         ssao_ctx.putImageData(ssao_data, 0, 0);
 
-
-        /*
-        		ctx.fillStyle="black";
-
-        		for(var i = 0; i<Background.vertices.length;i++)
-        		{
-        			var v = Background.vertices[i];
-        				ctx.fillRect(v[0]-2,v[1]-2,4,4);
-        				ctx.fillText(i,v[0]+8,v[1]-4);
-
-        		}*/
 
     },
     init: function() {
