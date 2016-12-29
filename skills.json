@@ -124,6 +124,18 @@ getSkills({
 	"19 Oct 2016": {
         "JS/ES6/TS": 0.78,
         "LESS/SCSS": 0.55
+    },
+	"28 Nov 2016": {
+        "wxWidgets": 0.3,
+		"Cmake": 0.5,
+		"Emscripten": 0.5
+    },
+	"24 Dec 2016": {
+        "Angular Light": 0.4,
+        "Java": 0.7,
+		"Git": 0.4,
+		"SQL": 0.5
     }
+	
 
 });
