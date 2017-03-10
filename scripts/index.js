@@ -392,7 +392,7 @@ var Background = {
     DENSITY: 0.1,
     DEPTH: 0.04,
     OFFSET: 15,
-    SSAO_SHADENESS: 2.0,
+    SSAO_SHADENESS: 1000.0,
 	SENSITIVITY:0.2,
     ctx: null,
     canvas: null,
@@ -474,13 +474,12 @@ var Background = {
     },
     drawLine: function(img, v0, v1) {
 
-        var x0 = v0[0];
-        var y0 = v0[1];
+        var x0 = Math.round(v0[0]);
+        var y0 = Math.round(v0[1]);
         var d0 = v0[2];
-        var x1 = v1[0];
-        var y1 = v1[1];
+        var x1 = Math.round(v1[0]);
+        var y1 = Math.round(v1[1]);
         var d1 = v1[2];
-
 
         var tmp;
         if (x0 > x1 || y0 > y1) {
@@ -504,7 +503,8 @@ var Background = {
                 var ind = (Math.floor(y) * Background.canvas.width + x) * 4;
 
                 var t = (x - x0) / dx;
-                img.data[ind + 3] = Background.SSAO_SHADENESS * (t * d0 + (1 - t) * d1);
+                img.data[ind + 3] = Math.ceil(Background.SSAO_SHADENESS * (t * d0 + (1 - t) * d1));
+				
             }
         else
             for (var y = Math.floor(y0), x = x0; y < y1; y++, x += 1 / k) {
@@ -512,7 +512,7 @@ var Background = {
 
                 var ind = (y * Background.canvas.width + Math.floor(x)) * 4;
                 var t = (y - y0) / dy;
-                img.data[ind + 3] = Background.SSAO_SHADENESS * (t * d0 + (1 - t) * d1);
+                img.data[ind + 3] =  Math.ceil(Background.SSAO_SHADENESS * (t * d0 + (1 - t) * d1));
             }
 
 
@@ -588,13 +588,13 @@ var Background = {
             ctx.moveTo(p1[0], p1[1]);
             ctx.lineTo(p2[0], p2[1]);
             ctx.lineTo(p3[0], p3[1]);
+			
+            ctx.closePath();
+            ctx.fill();
 
             this.drawLine(ssao_data, p1, p2);
             this.drawLine(ssao_data, p2, p3);
             this.drawLine(ssao_data, p3, p1);
-
-            ctx.closePath();
-            ctx.fill();
         }
 
         ssao_ctx.putImageData(ssao_data, 0, 0);
