@@ -177,34 +177,54 @@ var PageScroll = {
 };
 
 var Gestures = {
-    isTouchDown: false,
-
+	isDown:false,
+	touchstart:{},
     ondown: function(e) {
 
-        PageScroll.animation = false;
-
+		var event =  e;
+		if(e.type=="touchstart")
+			event =  e.touches[0];
+		
+		Gestures.touchstart = {X:event.pageX, Y:event.pageY};
+		Gestures.isDown = true;
     },
     onup: function(e) {
-
-        PageScroll.animation = true;
-
+		
+		var distances = PageScroll.heights.map(function(a){ return Math.abs(PageScroll.top-a);});
+		var minDistance = distances.reduce(function(a,b){ return Math.min(a,b);});
+		
+		PageScroll.to(distances.indexOf(minDistance));
+			
+		
+		Gestures.isDown = false;
     },
     onmove: function(e) {
+		
+		if(!Gestures.isDown)return;
+		
+		var event =  e;
+		if(e.type=="touchmove")
+			event =  e.touches[0];
+		
+		if(e.type=="mousemove" && e.target.tagName!="INPUT")
+			e.preventDefault();
+		
+		PageScroll.top += Gestures.touchstart.Y-event.pageY;
 
-
+		Gestures.touchstart = {X:event.pageX, Y:event.pageY};
     },
     init: function() {
 
-        var touchstart = {};
-
         document.addEventListener('touchstart', Gestures.ondown);
-
         document.addEventListener('touchmove', Gestures.onmove);
-
         document.addEventListener('touchleave', Gestures.onup);
         document.addEventListener('touchcancel', Gestures.onup);
         document.addEventListener('touchend', Gestures.onup);
 
+		document.addEventListener('mousedown', Gestures.ondown);
+		document.addEventListener('mousemove', Gestures.onmove);
+		document.addEventListener('mouseup', Gestures.onup);
+		
     }
 
 
@@ -403,11 +423,9 @@ var Background = {
     },
     generate: function() {
 
-        var _this = this;
-
         var wcount = Math.ceil(Background.canvas.width / 10);
         var hcount = Math.ceil(Background.canvas.height / 10);
-        console.log(wcount, hcount)
+
         var wstep = Background.canvas.width / (wcount - 1);
         var hstep = Background.canvas.height / (hcount - 1);
 
