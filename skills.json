@@ -136,6 +136,9 @@ getSkills({
 	"Git": 0.4,
 	"SQL": 0.5
     },
+	"22 Feb 2017": {
+	"Docker": 0
+    },
 	"15 Mar 2017": {
 	"Docker": 0.2
     }
