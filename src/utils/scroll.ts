@@ -5,55 +5,46 @@ export function usePageScroll(
     speed: number,
     animation = true
   ) {
-    const ids: string[] = []
     let current = 0
     let sumDelta = 0
-    let top = 0
     let lastTime = 0
     let isDown = false
     let touchstart: { X: number; Y: number } = { X: 0, Y: 0 }
+    let top: number | null = null
 
+    function getTop() {
+      return top === null ? getOffset(current) : top
+    }
+  
     function getOffset(index: number) {
       const box = pages[index].getBoundingClientRect();
-
-      const body = document.body;
-      const docEl = document.documentElement;
-
-      const scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
     
-      const clientTop = docEl.clientTop || body.clientTop || 0;
+      const clientTop = document.documentElement.clientTop || document.body.clientTop || 0;
       const top = box.top + scrollTop - clientTop;
     
       return top
     }
 
     function up() {
-      if (current > 0) {
-        top -= pages[current - 1].clientHeight;
-        current--;
-      }
-      
+      current = Math.max(current - 1, 0)
     }
 
     function down() {
-      if (current + 1 < pages.length) {
-        top += pages[current].clientHeight;
-        current++;
-      }
+      current = Math.min(current + 1, pages.length - 1)
     }
 
     function to(id: string | number) {
       if (typeof id === "string") {
-        const index = ids.indexOf(id);
+        const index = pages.findIndex(p => p.id === id);
 
         if (index !== -1) {
-          top = getOffset(index);
           current = index;
         }
       } else if (typeof id === "number" && id >= 0 && id < pages.length) {
-        top = getOffset(id);
         current = id;
       }
+      top = null
     }
 
     function compensateTime(t: number) {
@@ -70,11 +61,11 @@ export function usePageScroll(
 
       const time = new Date().getTime();
 
-      const delta = (top - window.scrollY) * speed;
-      const delta_time = compensateTime(time - lastTime);
+      const delta = (getTop() - window.scrollY) * speed;
+      const deltaTime = compensateTime(time - lastTime);
 
       if (animation)
-        window.scrollTo(0, window.scrollY + Math.floor(delta) * delta_time)
+        window.scrollTo(0, window.scrollY + Math.floor(delta) * deltaTime)
 
       lastTime = time;
     }
@@ -133,7 +124,7 @@ export function usePageScroll(
     }
 
     function onup(e: MouseEvent | TouchEvent) {
-      const distances = pages.map((p,i) => getOffset(i)).map((a) => { return Math.abs(top - a); });
+      const distances = pages.map((p,i) => getOffset(i)).map((a) => { return Math.abs(getTop() - a); });
       const minDistance = distances.reduce((a, b) => { return Math.min(a, b); });
 
       to(distances.indexOf(minDistance));
@@ -148,15 +139,12 @@ export function usePageScroll(
       if (e.type == "mousemove" && (e.target as HTMLElement).tagName != "INPUT")
         e.preventDefault();
 
-      top += touchstart.Y - event.pageY;
+      top = getTop() + (touchstart.Y - event.pageY);
 
       touchstart = { X: event.pageX, Y: event.pageY };
     }
 
     function mount() {
-      for (let i = 0; i < pages.length; i++)
-        ids[i] = pages[i].id;
-
       document.body.addEventListener("mousewheel", mousewheel, { passive: true });
       document.body.addEventListener("DOMMouseScroll", mousewheel, { passive: true });
       window.addEventListener('resize', e => resize());
