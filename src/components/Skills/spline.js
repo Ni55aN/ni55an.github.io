@@ -1,5 +1,4 @@
-var CubicSpline, MonotonicCubicSpline;
-MonotonicCubicSpline = function() {
+export const MonotonicCubicSpline = function() {
   function MonotonicCubicSpline(x, y) {
     var alpha, beta, delta, dist, i, m, n, tau, to_fix, _i, _j, _len, _len2, _ref, _ref2, _ref3, _ref4;
     n = x.length;
@@ -71,7 +70,7 @@ MonotonicCubicSpline = function() {
 
 
 
-CubicSpline = function() {
+export const CubicSpline = function() {
   function CubicSpline(x, a, d0, dn) {
     var b, c, clamped, d, h, i, k, l, n, s, u, y, z, _ref;
     if (!((x != null) && (a != null))) {

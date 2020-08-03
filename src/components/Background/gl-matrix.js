@@ -1,6 +1,6 @@
-var mat4 = {};
-var vec3 = {};
-var vec2 = {};
+export var mat4 = {};
+export var vec3 = {};
+export var vec2 = {};
 
 mat4.create = function(){
 	
