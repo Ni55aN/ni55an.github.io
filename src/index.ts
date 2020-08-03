@@ -78,7 +78,7 @@ function App() {
     )
   ]
   const app = h('div', {}, pages)
-  const scroll = new PageScroll(pages)
+  const scroll = new PageScroll(pages, 1 / 10)
   const background = new Background()
 
   onMount(app, () => {

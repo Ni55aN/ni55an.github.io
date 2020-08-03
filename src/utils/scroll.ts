@@ -1,20 +1,34 @@
 export class PageScroll {
-  heights: number[] = []
   ids: string[] = []
-  animation = true
   current = 0
-  SPEED = 1 / 10
   SCROLL_MIN_DELTA = 200
   sum_delta = 0
   top = 0
   last_time = 0
-  windowHeight = 0
   isDown = false
   touchstart: { X: number; Y: number } = { X: 0, Y: 0 }
 
-  constructor(private pages: HTMLElement[]) { }
+  constructor(
+    private pages: HTMLElement[],
+    private speed: number,
+    private animation = true
+  ) { }
 
-  up() {
+  private getOffset(index: number) {
+    var box = this.pages[index].getBoundingClientRect();
+
+    var body = document.body;
+    var docEl = document.documentElement;
+
+    var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+  
+    var clientTop = docEl.clientTop || body.clientTop || 0;
+    var top = box.top + scrollTop - clientTop;
+  
+    return top
+  }
+
+  private up() {
     if (this.current > 0) {
       this.top -= this.pages[this.current - 1].clientHeight;
       this.current--;
@@ -22,28 +36,28 @@ export class PageScroll {
     
   }
 
-  down() {
+  private down() {
     if (this.current + 1 < this.pages.length) {
       this.top += this.pages[this.current].clientHeight;
       this.current++;
     }
   }
 
-  to(id: string | number) {
+  public to(id: string | number) {
     if (typeof id === "string") {
       var index = this.ids.indexOf(id);
 
       if (index !== -1) {
-        this.top = this.heights[index];
+        this.top = this.getOffset(index);
         this.current = index;
       }
-    } else if (typeof id === "number" && id >= 0 && id < this.heights.length) {
-      this.top = this.heights[id];
+    } else if (typeof id === "number" && id >= 0 && id < this.pages.length) {
+      this.top = this.getOffset(id);
       this.current = id;
     }
   }
 
-  compensateTime(t: number) {
+  private compensateTime(t: number) {
     var k = 0.9;
     function f(x: number) {
       return Math.pow(k, x) / Math.log(k);
@@ -52,12 +66,12 @@ export class PageScroll {
     return (f(t) - f(0)) / (-f(0));
   }
 
-  autoScroll() {
+  private autoScroll() {
     requestAnimationFrame(() => this.autoScroll());
 
     var time = new Date().getTime();
 
-    var delta = (this.top - window.scrollY) * this.SPEED;
+    var delta = (this.top - window.scrollY) * this.speed;
     var delta_time = this.compensateTime(time - this.last_time);
 
     if (this.animation)
@@ -66,7 +80,7 @@ export class PageScroll {
     this.last_time = time;
   }
 
-  canScroll(e: Event) {
+  private canScroll(e: Event) {
     const wheel = e as WheelEvent & { path: HTMLElement[] }
     const path = wheel.path.slice(0, wheel.path.indexOf(document.body))
     const delta = wheel.deltaY ? wheel.deltaY : wheel.detail;
@@ -77,7 +91,7 @@ export class PageScroll {
       && getComputedStyle(el).overflow !== 'hidden')
   }
 
-  mousewheel = (e: Event) => {
+  private mousewheel = (e: Event) => {
     const wheel = e as WheelEvent & { path: HTMLElement[] }
     const delta = wheel.deltaY ? wheel.deltaY : wheel.detail;
 
@@ -96,20 +110,11 @@ export class PageScroll {
       this.sum_delta = 0;
   }
 
-  resize = () => {
-    this.top = Math.floor(this.top * window.innerHeight / this.windowHeight);
-
-    this.windowHeight = window.innerHeight;
-
-    this.heights[0] = 0;
-
-    for (var i = 1; i < this.pages.length; i++)
-      this.heights[i] = this.pages[i - 1].clientHeight + this.heights[i - 1];
-
+  private resize = () => {
     this.to(this.current);
   }
 
-  keydown = (e: KeyboardEvent) => {
+  private keydown = (e: KeyboardEvent) => {
     if (e.keyCode == 32)
       this.down();
     else if (e.keyCode == 37 || e.keyCode == 38)
@@ -119,7 +124,7 @@ export class PageScroll {
   }
 
 
-  ondown = (e: MouseEvent | TouchEvent) => {
+  private ondown = (e: MouseEvent | TouchEvent) => {
     var event: MouseEvent | Touch = 'touches' in e ? e.touches[0] : e
 
     this.touchstart = { X: event.pageX, Y: event.pageY };
@@ -128,8 +133,8 @@ export class PageScroll {
     }
   }
 
-  onup = (e: MouseEvent | TouchEvent) => {
-    var distances = this.heights.map((a) => { return Math.abs(this.top - a); });
+  private onup = (e: MouseEvent | TouchEvent) => {
+    var distances = this.pages.map((p,i) => this.getOffset(i)).map((a) => { return Math.abs(this.top - a); });
     var minDistance = distances.reduce((a, b) => { return Math.min(a, b); });
 
     this.to(distances.indexOf(minDistance));
@@ -137,7 +142,7 @@ export class PageScroll {
     this.isDown = false;
   }
 
-  onmove = (e: MouseEvent | TouchEvent) => {
+  private onmove = (e: MouseEvent | TouchEvent) => {
     if (!this.isDown) return;
     var event: MouseEvent | Touch = 'touches' in e ? e.touches[0] : e
 
@@ -149,7 +154,7 @@ export class PageScroll {
     this.touchstart = { X: event.pageX, Y: event.pageY };
   }
 
-  mount() {
+  public mount() {
     for (var i = 0; i < this.pages.length; i++)
       this.ids[i] = this.pages[i].id;
 
@@ -168,7 +173,6 @@ export class PageScroll {
     document.addEventListener('mouseup', this.onup);
 
     document.body.style.overflow = 'hidden';
-    this.windowHeight = window.innerHeight;
 
     this.resize();
 
@@ -176,7 +180,7 @@ export class PageScroll {
     this.autoScroll();
   }
 
-  destroy() {
+  public destroy() {
     document.body.removeEventListener("mousewheel", this.mousewheel);
     document.body.removeEventListener("DOMMouseScroll", this.mousewheel);
     window.removeEventListener('resize', this.resize);
