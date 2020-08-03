@@ -6,6 +6,7 @@ import { overlayGradient } from './gradient'
 import { onMount, onDestroy } from '../../utils'
 import { Canvas2D } from '../../utils/canvas'
 import refreshImg from '../../assets/img/refresh.png'
+import logoImg from '../../assets/svg/logo.svg'
 
 const refreshButtonStyles = css({
     $name: 'refreshButton',
@@ -24,7 +25,7 @@ export function Logo({ text, duration, ondone, debug }: { text: string; duration
     let startTime: number = 0;
     const mask = new MaskPainter(getElapsedTime, duration, debug);
     const background = new BinaryBackground(text);
-    const svg = new SVG('./src/assets/svg/logo.svg', function () {
+    const svg = new SVG(logoImg, function () {
         startTime = new Date().getTime();
         resize();
         renderAnimate();
