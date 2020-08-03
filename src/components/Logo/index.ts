@@ -5,6 +5,7 @@ import { BinaryBackground } from './binary-background'
 import { overlayGradient } from './gradient'
 import { onMount, onDestroy } from '../../utils'
 import { Canvas2D } from '../../utils/canvas'
+import refreshImg from '../../assets/img/refresh.png'
 
 const refreshButtonStyles = css({
     $name: 'refreshButton',
@@ -23,14 +24,14 @@ export function Logo({ text, duration, ondone, debug }: { text: string; duration
     let startTime: number = 0;
     const mask = new MaskPainter(getElapsedTime, duration, debug);
     const background = new BinaryBackground(text);
-    const svg = new SVG('svg/logo.svg', function () {
+    const svg = new SVG('./src/assets/svg/logo.svg', function () {
         startTime = new Date().getTime();
         resize();
         renderAnimate();
     });
     const editor = new MaskEditor(mask, svg)
 
-    const refreshButton = h('img', { src: 'img/refresh.png', click: refresh, className: refreshButtonStyles.className })
+    const refreshButton = h('img', { src: refreshImg, click: refresh, className: refreshButtonStyles.className })
     container.appendChild(refreshButton)
     container.appendChild(canvas)
 

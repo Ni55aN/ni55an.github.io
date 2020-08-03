@@ -15,6 +15,13 @@ module.exports = {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
       },
+      {
+          test: /\.(png|jpe?g|svg)$/,
+          loader: 'file-loader',
+          options: {
+              name: 'assets/[name].[ext]',
+          }
+      }
     ]
   },
   resolve: {
@@ -28,6 +35,6 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'Ni55aN Personal Page'
     }),
-    new FaviconsWebpackPlugin('./svg/logo.svg')
+    new FaviconsWebpackPlugin('./src/assets/svg/logo.svg')
   ]
 };

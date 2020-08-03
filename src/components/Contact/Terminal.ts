@@ -2,6 +2,8 @@ import { Attrs, h, $for, $$, Child } from 'easyhard'
 import { injectStyles } from 'easyhard-styles'
 import { map } from 'rxjs/operators'
 import { commands } from '../../consts/cmd'
+import backgroundImg from '../../assets/img/ubuntu-bg.png'
+import buttonsImg from '../../assets/img/ubuntu-buttons.png'
 
 function Input(props: Attrs<'input'>) {
   return h('input', props, injectStyles({
@@ -36,7 +38,7 @@ function Window(...children: Child[]) {
       height: '28px',
       width: '100%',
       left: '0',
-      background: "url('../img/ubuntu-buttons.png') no-repeat, url('../img/ubuntu-bg.png') repeat-x"
+      background: `url('${buttonsImg}') no-repeat, url('${backgroundImg}') repeat-x`
     })),
     h('div', {}, injectStyles({
       padding: '0.5em',

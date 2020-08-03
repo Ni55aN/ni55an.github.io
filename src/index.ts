@@ -10,6 +10,7 @@ import './analytics'
 import { usePageScroll } from './utils/scroll'
 import { onMount, onDestroy } from './utils'
 import { Background } from './components/Background'
+import bgImg from './assets/img/bg.jpg'
 
 const bodyStyles = css({
   position: 'relative',
@@ -17,12 +18,12 @@ const bodyStyles = css({
   // overflowX: 'hidden',
   height: '100%',
   width: '100%',
-  backgroundImage: 'url(\'../img/bg.jpg\')',
+  backgroundImage: `url('${bgImg}')`,
   backgroundSize: '100%',
   backgroundAttachment: 'fixed',
   fontStyle: 'italic',
   fontFamily: '"Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif',
-  '@import': 'url(../fonts/amplify.css)'
+  '@import': 'url(./assets/fonts/amplify.css)'
 })
 
 document.body.classList.add(bodyStyles.className)
