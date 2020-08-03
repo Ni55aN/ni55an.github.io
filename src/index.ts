@@ -11,6 +11,7 @@ import { usePageScroll } from './utils/scroll'
 import { onMount, onDestroy } from './utils'
 import { Background } from './components/Background'
 import bgImg from './assets/img/bg.jpg'
+import './assets/fonts/amplify.css'
 
 const bodyStyles = css({
   position: 'relative',
@@ -22,8 +23,7 @@ const bodyStyles = css({
   backgroundSize: '100%',
   backgroundAttachment: 'fixed',
   fontStyle: 'italic',
-  fontFamily: '"Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif',
-  '@import': 'url(./assets/fonts/amplify.css)'
+  fontFamily: '"Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif'
 })
 
 document.body.classList.add(bodyStyles.className)

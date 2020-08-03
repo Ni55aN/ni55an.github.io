@@ -16,12 +16,16 @@ module.exports = {
         use: ['style-loader', 'css-loader'],
       },
       {
-          test: /\.(png|jpe?g|svg)$/,
-          loader: 'file-loader',
-          options: {
-              name: 'assets/[name].[ext]',
-          }
-      }
+        test: /\.(png|jpe?g|gif|svg)$/,
+        loader: 'file-loader',
+        options: {
+            name: 'assets/[name].[ext]',
+        }
+      },
+      {
+        test: /\.(woff|woff2|ttf|eot)$/,
+        use: 'file-loader?name=fonts/[name].[ext]!static'
+    }
     ]
   },
   resolve: {
