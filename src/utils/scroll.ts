@@ -1,198 +1,202 @@
-export class PageScroll {
-  ids: string[] = []
-  current = 0
-  SCROLL_MIN_DELTA = 200
-  sum_delta = 0
-  top = 0
-  last_time = 0
-  isDown = false
-  touchstart: { X: number; Y: number } = { X: 0, Y: 0 }
+const SCROLL_MIN_DELTA = 200
 
-  constructor(
-    private pages: HTMLElement[],
-    private speed: number,
-    private animation = true
-  ) { }
+export function usePageScroll(
+    pages: HTMLElement[],
+    speed: number,
+    animation = true
+  ) {
+    const ids: string[] = []
+    let current = 0
+    let sumDelta = 0
+    let top = 0
+    let lastTime = 0
+    let isDown = false
+    let touchstart: { X: number; Y: number } = { X: 0, Y: 0 }
 
-  private getOffset(index: number) {
-    var box = this.pages[index].getBoundingClientRect();
+    function getOffset(index: number) {
+      const box = pages[index].getBoundingClientRect();
 
-    var body = document.body;
-    var docEl = document.documentElement;
+      const body = document.body;
+      const docEl = document.documentElement;
 
-    var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
-  
-    var clientTop = docEl.clientTop || body.clientTop || 0;
-    var top = box.top + scrollTop - clientTop;
-  
-    return top
-  }
-
-  private up() {
-    if (this.current > 0) {
-      this.top -= this.pages[this.current - 1].clientHeight;
-      this.current--;
-    }
+      const scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
     
-  }
-
-  private down() {
-    if (this.current + 1 < this.pages.length) {
-      this.top += this.pages[this.current].clientHeight;
-      this.current++;
+      const clientTop = docEl.clientTop || body.clientTop || 0;
+      const top = box.top + scrollTop - clientTop;
+    
+      return top
     }
-  }
 
-  public to(id: string | number) {
-    if (typeof id === "string") {
-      var index = this.ids.indexOf(id);
-
-      if (index !== -1) {
-        this.top = this.getOffset(index);
-        this.current = index;
+    function up() {
+      if (current > 0) {
+        top -= pages[current - 1].clientHeight;
+        current--;
       }
-    } else if (typeof id === "number" && id >= 0 && id < this.pages.length) {
-      this.top = this.getOffset(id);
-      this.current = id;
-    }
-  }
-
-  private compensateTime(t: number) {
-    var k = 0.9;
-    function f(x: number) {
-      return Math.pow(k, x) / Math.log(k);
+      
     }
 
-    return (f(t) - f(0)) / (-f(0));
-  }
-
-  private autoScroll() {
-    requestAnimationFrame(() => this.autoScroll());
-
-    var time = new Date().getTime();
-
-    var delta = (this.top - window.scrollY) * this.speed;
-    var delta_time = this.compensateTime(time - this.last_time);
-
-    if (this.animation)
-      window.scrollTo(0, window.scrollY + Math.floor(delta) * delta_time)
-
-    this.last_time = time;
-  }
-
-  private canScroll(e: Event) {
-    const wheel = e as WheelEvent & { path: HTMLElement[] }
-    const path = wheel.path.slice(0, wheel.path.indexOf(document.body))
-    const delta = wheel.deltaY ? wheel.deltaY : wheel.detail;
-
-    return !path.find(el =>
-      (delta < 0 && Math.ceil(el.scrollTop) > 0 || delta > 0 && Math.ceil(el.scrollTop) + el.clientHeight < el.scrollHeight)
-      && el !== document.body
-      && getComputedStyle(el).overflow !== 'hidden')
-  }
-
-  private mousewheel = (e: Event) => {
-    const wheel = e as WheelEvent & { path: HTMLElement[] }
-    const delta = wheel.deltaY ? wheel.deltaY : wheel.detail;
-
-    if (!this.canScroll(e)) return
-
-    if (this.sum_delta == 0) {
-      if (delta < 0)
-        this.up();
-      else
-        this.down();
+    function down() {
+      if (current + 1 < pages.length) {
+        top += pages[current].clientHeight;
+        current++;
+      }
     }
 
-    this.sum_delta += delta;
+    function to(id: string | number) {
+      if (typeof id === "string") {
+        const index = ids.indexOf(id);
 
-    if (Math.abs(this.sum_delta) >= this.SCROLL_MIN_DELTA)
-      this.sum_delta = 0;
-  }
-
-  private resize = () => {
-    this.to(this.current);
-  }
-
-  private keydown = (e: KeyboardEvent) => {
-    if (e.keyCode == 32)
-      this.down();
-    else if (e.keyCode == 37 || e.keyCode == 38)
-      this.up();
-    else if (e.keyCode == 39 || e.keyCode == 40)
-      this.down();
-  }
-
-
-  private ondown = (e: MouseEvent | TouchEvent) => {
-    var event: MouseEvent | Touch = 'touches' in e ? e.touches[0] : e
-
-    this.touchstart = { X: event.pageX, Y: event.pageY };
-    if (this.canScroll(e)) {
-      this.isDown = true;
+        if (index !== -1) {
+          top = getOffset(index);
+          current = index;
+        }
+      } else if (typeof id === "number" && id >= 0 && id < pages.length) {
+        top = getOffset(id);
+        current = id;
+      }
     }
-  }
 
-  private onup = (e: MouseEvent | TouchEvent) => {
-    var distances = this.pages.map((p,i) => this.getOffset(i)).map((a) => { return Math.abs(this.top - a); });
-    var minDistance = distances.reduce((a, b) => { return Math.min(a, b); });
+    function compensateTime(t: number) {
+      const k = 0.9;
+      function f(x: number) {
+        return Math.pow(k, x) / Math.log(k);
+      }
 
-    this.to(distances.indexOf(minDistance));
+      return (f(t) - f(0)) / (-f(0));
+    }
 
-    this.isDown = false;
-  }
+    function autoScroll() {
+      requestAnimationFrame(() => autoScroll());
 
-  private onmove = (e: MouseEvent | TouchEvent) => {
-    if (!this.isDown) return;
-    var event: MouseEvent | Touch = 'touches' in e ? e.touches[0] : e
+      const time = new Date().getTime();
 
-    if (e.type == "mousemove" && (e.target as HTMLElement).tagName != "INPUT")
-      e.preventDefault();
+      const delta = (top - window.scrollY) * speed;
+      const delta_time = compensateTime(time - lastTime);
 
-    this.top += this.touchstart.Y - event.pageY;
+      if (animation)
+        window.scrollTo(0, window.scrollY + Math.floor(delta) * delta_time)
 
-    this.touchstart = { X: event.pageX, Y: event.pageY };
-  }
+      lastTime = time;
+    }
 
-  public mount() {
-    for (var i = 0; i < this.pages.length; i++)
-      this.ids[i] = this.pages[i].id;
+    function canScroll(e: Event) {
+      const wheel = e as WheelEvent & { path: HTMLElement[] }
+      const path = wheel.path.slice(0, wheel.path.indexOf(document.body))
+      const delta = wheel.deltaY ? wheel.deltaY : wheel.detail;
 
-    document.body.addEventListener("mousewheel", this.mousewheel, { passive: true });
-    document.body.addEventListener("DOMMouseScroll", this.mousewheel, { passive: true });
-    window.addEventListener('resize', e => this.resize());
-    document.addEventListener('keydown', e => this.keydown(e));
-    document.addEventListener('touchstart', this.ondown);
-    document.addEventListener('touchmove', this.onmove);
-    // document.addEventListener('touchleave', this.onup);
-    document.addEventListener('touchcancel', this.onup);
-    document.addEventListener('touchend', this.onup);
+      return !path.find(el =>
+        (delta < 0 && Math.ceil(el.scrollTop) > 0 || delta > 0 && Math.ceil(el.scrollTop) + el.clientHeight < el.scrollHeight)
+        && el !== document.body
+        && getComputedStyle(el).overflow !== 'hidden')
+    }
 
-    document.addEventListener('mousedown', this.ondown);
-    document.addEventListener('mousemove', this.onmove);
-    document.addEventListener('mouseup', this.onup);
+    function mousewheel(e: Event) {
+      const wheel = e as WheelEvent & { path: HTMLElement[] }
+      const delta = wheel.deltaY ? wheel.deltaY : wheel.detail;
 
-    document.body.style.overflow = 'hidden';
+      if (!canScroll(e)) return
 
-    this.resize();
+      if (sumDelta == 0) {
+        if (delta < 0)
+          up();
+        else
+          down();
+      }
 
-    this.to(location.hash.replace('#', ''));
-    this.autoScroll();
-  }
+      sumDelta += delta;
 
-  public destroy() {
-    document.body.removeEventListener("mousewheel", this.mousewheel);
-    document.body.removeEventListener("DOMMouseScroll", this.mousewheel);
-    window.removeEventListener('resize', this.resize);
-    document.removeEventListener('keydown', this.keydown);
-    document.removeEventListener('touchstart', this.ondown);
-    document.removeEventListener('touchmove', this.onmove);
-    // document.removeEventListener('touchleave', this.onup);
-    document.removeEventListener('touchcancel', this.onup);
-    document.removeEventListener('touchend', this.onup);
+      if (Math.abs(sumDelta) >= SCROLL_MIN_DELTA)
+        sumDelta = 0;
+    }
 
-    document.removeEventListener('mousedown', this.ondown);
-    document.removeEventListener('mousemove', this.onmove);
-    document.removeEventListener('mouseup', this.onup);
-  }
+    function resize() {
+      to(current);
+    }
+
+    function keydown(e: KeyboardEvent) {
+      if (e.keyCode == 32)
+        down();
+      else if (e.keyCode == 37 || e.keyCode == 38)
+        up();
+      else if (e.keyCode == 39 || e.keyCode == 40)
+        down();
+    }
+
+
+    function ondown(e: MouseEvent | TouchEvent) {
+      const event: MouseEvent | Touch = 'touches' in e ? e.touches[0] : e
+
+      touchstart = { X: event.pageX, Y: event.pageY };
+      if (canScroll(e)) {
+        isDown = true;
+      }
+    }
+
+    function onup(e: MouseEvent | TouchEvent) {
+      const distances = pages.map((p,i) => getOffset(i)).map((a) => { return Math.abs(top - a); });
+      const minDistance = distances.reduce((a, b) => { return Math.min(a, b); });
+
+      to(distances.indexOf(minDistance));
+
+      isDown = false;
+    }
+
+    function onmove(e: MouseEvent | TouchEvent) {
+      if (!isDown) return;
+      const event: MouseEvent | Touch = 'touches' in e ? e.touches[0] : e
+
+      if (e.type == "mousemove" && (e.target as HTMLElement).tagName != "INPUT")
+        e.preventDefault();
+
+      top += touchstart.Y - event.pageY;
+
+      touchstart = { X: event.pageX, Y: event.pageY };
+    }
+
+    function mount() {
+      for (let i = 0; i < pages.length; i++)
+        ids[i] = pages[i].id;
+
+      document.body.addEventListener("mousewheel", mousewheel, { passive: true });
+      document.body.addEventListener("DOMMouseScroll", mousewheel, { passive: true });
+      window.addEventListener('resize', e => resize());
+      document.addEventListener('keydown', e => keydown(e));
+      document.addEventListener('touchstart', ondown);
+      document.addEventListener('touchmove', onmove);
+      document.addEventListener('touchcancel', onup);
+      document.addEventListener('touchend', onup);
+
+      document.addEventListener('mousedown', ondown);
+      document.addEventListener('mousemove', onmove);
+      document.addEventListener('mouseup', onup);
+
+      document.body.style.overflow = 'hidden';
+
+      resize();
+
+      to(location.hash.replace('#', ''));
+      autoScroll();
+    }
+
+    function destroy() {
+      document.body.removeEventListener("mousewheel", mousewheel);
+      document.body.removeEventListener("DOMMouseScroll", mousewheel);
+      window.removeEventListener('resize', resize);
+      document.removeEventListener('keydown', keydown);
+      document.removeEventListener('touchstart', ondown);
+      document.removeEventListener('touchmove', onmove);
+      document.removeEventListener('touchcancel', onup);
+      document.removeEventListener('touchend', onup);
+
+      document.removeEventListener('mousedown', ondown);
+      document.removeEventListener('mousemove', onmove);
+      document.removeEventListener('mouseup', onup);
+    }
+
+    return {
+      up,
+      down,
+      mount,
+      destroy
+    }
 }

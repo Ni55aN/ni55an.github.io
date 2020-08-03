@@ -7,7 +7,7 @@ import 'normalize.css'
 import { Work } from './components/Work'
 import { Contact } from './components/Contact'
 import './analytics'
-import { PageScroll } from './utils/scroll'
+import { usePageScroll } from './utils/scroll'
 import { onMount, onDestroy } from './utils'
 import { Background } from './components/Background'
 
@@ -78,7 +78,7 @@ function App() {
     )
   ]
   const app = h('div', {}, pages)
-  const scroll = new PageScroll(pages, 1 / 10)
+  const scroll = usePageScroll(pages, 1 / 10)
   const background = new Background()
 
   onMount(app, () => {
