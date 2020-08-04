@@ -3,6 +3,9 @@ import { TimingRange } from '../shared/TimingRange';
 import { Item } from './types';
 import { extractCachedSpline } from './spline/index';
 
+const FROM_YEAR = 2011
+const UNTIL_YEAR = new Date().getFullYear()
+
 export function SkillsTiming(skills: {[key: string]: {[name: string]: number}}, props: { change?: (items: Item[]) => void } = {}) {
   const skillNames = Object.keys(Object.entries(skills).reduce((acc, [time, skills]) => ({ ...acc, ...skills }), {}))
 
@@ -19,14 +22,14 @@ export function SkillsTiming(skills: {[key: string]: {[name: string]: number}}, 
   }
 
   const currentYear = new Date().getFullYear();
-  const labels = new Array(currentYear - 2011 + 1).fill(0).map((_, i) => String(2011 + i))
+  const labels = new Array(currentYear - FROM_YEAR + 1).fill(0).map((_, i) => String(FROM_YEAR + i))
   const currentDate = new Date().getTime()
 
   update(currentDate)
 
   return TimingRange({
-    from: Date.parse("1 Jan 2011"),
-    until: Date.parse("31 Dec " + currentYear),
+    from: Date.parse(`1 Jan ${FROM_YEAR}`),
+    until: Date.parse(`31 Dec ${UNTIL_YEAR}`),
     value: currentDate,
     labels,
     change: update
