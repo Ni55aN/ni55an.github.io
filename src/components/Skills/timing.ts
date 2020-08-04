@@ -1,36 +1,14 @@
-import { MonotonicCubicSpline } from './spline';
+
 import { TimingRange } from '../shared/TimingRange';
-
-export type Item = { name: string; value: number }
-
-function extractSpline(skillName: Item['name'], values: {[key: string]: any}) {
-  const pointsX = [];
-  const pointsY = [];
-
-  for (let time in values)
-    for (let name in values[time]) {
-      if (skillName == name) {
-        pointsX.push(Date.parse(time));
-        pointsY.push(values[time][name]);
-      }
-    }
-
-  if (pointsX.length > 0) {
-    pointsX.push(Date.now());
-    pointsY.push(pointsY[pointsY.length - 1]);
-
-    return new MonotonicCubicSpline(pointsX, pointsY);
-  }
-  return null
-}
+import { Item } from './types';
+import { extractCachedSpline } from './spline/index';
 
 export function SkillsTiming(skills: {[key: string]: {[name: string]: number}}, props: { change?: (items: Item[]) => void } = {}) {
   const skillNames = Object.keys(Object.entries(skills).reduce((acc, [time, skills]) => ({ ...acc, ...skills }), {}))
-  const splines = skillNames.map(name => ({ name, spline: extractSpline(name, skills) }))
 
   function update(time: string | number) {
     const skillValues = skillNames.map(name => {
-      const spline = splines.find(item => item.name === name)?.spline;
+      const spline = extractCachedSpline(name, skills)
 
       return {
         name,

@@ -1,9 +1,10 @@
 import { css, injectStyles } from 'easyhard-styles'
 import { h, $ } from 'easyhard'
 import { groups } from '../../consts/skills'
-import { SkillsTiming, Item } from './timing'
+import { SkillsTiming } from './timing'
 import skills from '../../consts/skills'
 import { Stacks, Stack } from './Stacks'
+import { Item } from './types'
 
 const styles = css({
   $name: 'Skills',

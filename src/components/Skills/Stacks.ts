@@ -1,6 +1,6 @@
 import { $, Child, h } from 'easyhard'
 import { css, injectStyles } from 'easyhard-styles'
-import { Item } from './timing'
+import { Item } from './types'
 import { SkillGroup } from '../../consts/skills'
 import { throttleTime, map } from 'rxjs/operators'
 import { Progress } from './Progress'
