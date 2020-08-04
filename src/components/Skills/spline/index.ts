@@ -1,5 +1,6 @@
 import { MonotonicCubicSpline } from './spline';
 import { Item } from '../types';
+import { computeSkillDegradation } from './degradation';
 
 const cache = new Map<string, any>()
 
@@ -20,8 +21,12 @@ export function extractSpline(skillName: Item['name'], values: { [key: string]: 
     }
 
   if (pointsX.length > 0) {
-    pointsX.push(Date.now())
-    pointsY.push(pointsY[pointsY.length - 1])
+    const prevValue = pointsY[pointsY.length - 1]
+    const prevDate = pointsX[pointsX.length - 1]
+    const currentDate = Date.now()
+
+    pointsX.push(currentDate)
+    pointsY.push(computeSkillDegradation(prevValue, prevDate, currentDate))
 
     return new MonotonicCubicSpline(pointsX, pointsY)
   }
