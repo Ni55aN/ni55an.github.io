@@ -50,13 +50,15 @@ export default {
   },
   "6 Aug 2014": {
     "JavaScript": 0.4,
-    "OpenGL/WebGL": 0
+    "OpenGL/WebGL": 0,
+    "three.js": 0
   },
   "10 Sep 2014": {
     "Photoshop": 0.6
   },
   "25 Dec 2014": {
     "OpenGL/WebGL": 0.25,
+    "three.js": 0.35,
     "Blender": 0
   },
   "10 Feb 2015": {
@@ -65,7 +67,8 @@ export default {
   "10 Jul 2015": {
     "HTML/CSS": 0.7,
     "OpenGL/WebGL": 0.45,
-    "JavaScript": 0.65
+    "three.js": 0.6,
+    "JavaScript": 0.5
   },
   "5 Sep 2015": {
     "Photoshop": 0.65,
@@ -84,7 +87,7 @@ export default {
     "Java": 0.6,
     "SQL": 0.4,
     "MySQL/SQLite": 0.5,
-    "JavaScript": 0.7,
+    "JavaScript": 0.6,
     "Emscripten": 0.2,
     "LESS/SCSS": 0
   },
@@ -106,6 +109,7 @@ export default {
   "25 May 2016": {
     "wxWidgets": 0.2,
     "OpenGL/WebGL": 0.55,
+    "three.js": 0.7,
     "Blender": 0.35,
     "LESS/SCSS": 0.45,
     "Cmake": 0.45,
@@ -122,7 +126,7 @@ export default {
     "Angular Light": 0.25
   },
   "19 Oct 2016": {
-    "JavaScript": 0.75,
+    "JavaScript": 0.65,
     "LESS/SCSS": 0.55
   },
   "28 Nov 2016": {
@@ -144,37 +148,86 @@ export default {
     "Docker": 0.2
   },
   "20 Jun 2017": {
-    "Docker": 0.4
+    "Docker": 0.4,
+    "Node.js": 0.3
   },
   "30 Aug 2017": {
-    "JavaScript": 0.8,
+    "JavaScript": 0.7,
     "Vue.js": 0.2,
     "Git": 0.6,
     "UML": 0.45,
     "Blender": 0.55,
     "C++": 0.7
   },
+  "15 Sep 2017": {
+    "Angular": 0,
+    "Node.js": 0.35
+  },
+  "1 Dec 2017": {
+    "OpenGL/WebGL": 0.35,
+    "three.js": 0.4,
+  },
+  "3 Jan 2018": {
+    "Angular": 0.2
+  },
   "1 Apr 2018": {
-    "Docker Compose": 0
+    "JavaScript": 0.7,
+    "Docker": 0.35,
+    "Docker Compose": 0,
+    "Vue.js": 0.4,
+    "React.js": 0,
+    "Node.js": 0.3
+  },
+  "15 May 2018": {
+    "Git": 0.6,
+    "Angular": 0.4
   },
   "1 Jun 2018": {
-    "Docker Compose": 0.2
+    "Docker Compose": 0.2,
+    "SQL": 0.55
   },
   "1 Nov 2018": {
-    "Docker Swarm": 0
+    "Docker": 0.45,
+    "Docker Swarm": 0,
+    "SQL": 0.6,
+    "Vue.js": 0.5
   },
   "1 Dec 2018": {
     "Docker Swarm": 0.15
   },
+  "1 Mar 2019": {
+    "Git": 0.65,
+    "SQL": 0.65,
+    "React.js": 0.6,
+    "Node.js": 0.6
+  },
+  "1 Jul 2019": {
+    "Angular": 0.35
+  },
+  "1 Feb 2020": {
+    "OpenGL/WebGL": 0.45,
+    "three.js": 0.6,
+    "Vue.js": 0.65,
+    "Angular": 0.7,
+    "Node.js": 0.55
+  },
+  "1 Mar 2020": {
+    "React.js": 0.6
+  },
   "24 May 2020": {
+    "JavaScript": 0.7,
     "Kubernetes": 0
   },
   "25 Jun 2020": {
-    "Pulumi": 0
+    "Docker": 0.5,
+    "Pulumi": 0,
+    "Git": 0.7,
+    "Node.js": 0.7
   },
   "15 Jul 2020": {
     "Pulumi": 0.3,
-    "Kubernetes": 0.2
+    "Kubernetes": 0.2,
+    "React.js": 0.7
   }
 }
 
@@ -186,18 +239,18 @@ export type SkillGroup = {
 export const groups: {[key in 'languages' | 'techs' | 'devops' | 'tools']: SkillGroup} = {
   languages: {
     names: ['HTML/CSS', 'JavaScript', 'C++', 'C#', 'Java', 'SQL', 'LESS/SCSS', 'MySQL/SQLite'],
-    threshold: 0.1
+    threshold: 0.2
   },
   techs: {
-    names: ['Node.js', 'JEE', 'wxWidgets', 'OpenGL/WebGL', 'Angular Light', 'Vue.js', 'Angular', 'React.js', 'Redux', 'Android', '.NET/WPF'],
-    threshold: 0.1
+    names: ['Node.js', 'JEE', 'wxWidgets', 'OpenGL/WebGL', 'three.js', 'Angular Light', 'Vue.js', 'Angular', 'React.js', 'Redux', 'Android', '.NET/WPF'],
+    threshold: 0.2
   },
   devops: {
     names: ['Docker', 'Docker Compose', 'Docker Swarm', 'Kubernetes', 'Pulumi'],
-    threshold: 0.1
+    threshold: 0.2
   },
   tools: {
     names: ['Git', 'UML', 'Blender', 'Emscripten', 'Photoshop'],
-    threshold: 0.1
+    threshold: 0.2
   }
 }
