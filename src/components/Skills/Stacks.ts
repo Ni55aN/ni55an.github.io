@@ -37,7 +37,6 @@ const stackStyles = css({
 
 export function Stack(list: $<Item[]>, group: SkillGroup) {
   const filtered = list.pipe(
-    throttleTime(16, undefined, { trailing: true }),
     map(items => items.filter(item => item.value > group.threshold && group.names.includes(item.name)))
   )
 
