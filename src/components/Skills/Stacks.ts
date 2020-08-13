@@ -1,9 +1,11 @@
-import { $, Child, h } from 'easyhard'
+import { $, $$, $for, Child, h } from 'easyhard'
 import { css, injectStyles } from 'easyhard-styles'
 import { Item } from './types'
 import { SkillGroup } from '../../consts/skills'
-import { throttleTime, map } from 'rxjs/operators'
+import { map } from 'rxjs/operators'
 import { Progress } from './Progress'
+import { getArrayChanges, delayRemove } from '../../utils/dynamic-array'
+import { pipe } from 'rxjs'
 
 const skillsStacksStyles = css({
   $name: 'Stacks',
@@ -34,13 +36,30 @@ const stackStyles = css({
   minWidth: '22em'
 })
 
+function getSkillsForGroup(group: SkillGroup) {
+  return function (items: Item[]) {
+    return items.filter(item => item.value > group.threshold && group.names.includes(item.name))
+  }
+}
 
 export function Stack(list: $<Item[]>, group: SkillGroup) {
-  const filtered = list.pipe(
-    map(items => items.filter(item => item.value > group.threshold && group.names.includes(item.name)))
-  )
+  const skills = $$<{ name: string; value: $<number> }>([])
 
-  return h('div', {}, injectStyles(scrollStyles), filtered.pipe(map(items => {
-    return h('div', {}, injectStyles(stackStyles), items.map(({ name, value }) => Progress({ name, value })))
-  })))
+  return h('div', {}, injectStyles(scrollStyles),
+    list.pipe(
+      map(getSkillsForGroup(group)),
+      map(updatedSkills => {
+        const { added, removed, former } = getArrayChanges(updatedSkills, skills.value)
+
+        added.forEach(skill => skills.insert({ name: skill.name, value: $(skill.value) }))
+        removed.forEach(skill => skills.remove(skill))
+        former.forEach(skill => skill.value.next(updatedSkills.find(item => item.name === skill.name)?.value || 0))
+    
+        return null
+      })
+    ),
+    h('div', {}, injectStyles(stackStyles),
+      $for(skills, pipe(delayRemove(3000), map(([props, removed]) => Progress({ ...props, removed }))), { detached: true })
+    )
+  )
 }
