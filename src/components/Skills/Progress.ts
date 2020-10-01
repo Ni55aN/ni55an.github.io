@@ -1,7 +1,6 @@
-import { h, $ } from 'easyhard'
+import { h, $, onMount } from 'easyhard'
 import { css, injectStyles } from 'easyhard-styles'
 import { map } from 'rxjs/operators'
-import { onMount } from '../../utils'
 import { Observable, combineLatest } from 'rxjs'
 
 const progressStyles = css({
@@ -32,16 +31,13 @@ const progressIndicator = css({
 export function Progress({ name, value, removed }: { name: string, value: $<number>, removed: Observable<boolean> }) {
   const mounted = $(false)
   const collapsed = combineLatest(removed, mounted).pipe(map(([a, b]) => a === b))
-  const progress = h('div', {}, injectStyles(progressStyles, css({ height: collapsed.pipe(map(c => c ? '0' : '1.8em')), opacity: collapsed.pipe(map(c => c ? '0' : '1')) })),
+  
+  return h('div', {},
+    injectStyles(progressStyles, css({ height: collapsed.pipe(map(c => c ? '0' : '1.8em')), opacity: collapsed.pipe(map(c => c ? '0' : '1')) })),
+    onMount(() => setTimeout(() => {mounted.next(true)})),
     h('div', {}, injectStyles(progressLabelStyles), name),
     h('div', {}, injectStyles(progressIndicator),
       h('div', { style: value.pipe(map(v => `background-color: #f9950c; height: 100%; width: ${v*100}%`)) },)
     )
   )
-
-  onMount(progress, () => {
-   setTimeout(() => {mounted.next(true)})
-  })
-
-  return progress
 }

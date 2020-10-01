@@ -1,4 +1,4 @@
-import { h, Child } from 'easyhard'
+import { h, Child, onMount, onDestroy } from 'easyhard'
 import { Page, PageTitle, PageContent, PageHead } from './components/shared/Page'
 import { injectStyles, css } from 'easyhard-styles'
 import { Logo } from './components/Logo'
@@ -8,7 +8,6 @@ import { Work } from './components/Work'
 import { Contact } from './components/Contact'
 import './analytics'
 import { usePageScroll } from './utils/scroll'
-import { onMount, onDestroy } from './utils'
 import { Background } from './components/Background'
 import bgImg from './assets/img/bg.jpg'
 import './assets/fonts/amplify.css'
@@ -78,19 +77,20 @@ function App() {
       )
     )
   ]
-  const app = h('div', {}, pages)
+
   const scroll = usePageScroll(pages, 1 / 10)
   const background = new Background()
 
-  onMount(app, () => {
-    background.init()
-    scroll.mount()
-  })
-  onDestroy(app, () => {
-    scroll.destroy()
-  })
-
-  return app
+  return h('div', {},
+    onMount(() => {
+      background.init()
+      scroll.mount()
+    }),
+    onDestroy(() => {
+      scroll.destroy()
+    }),
+    pages
+  )
 }
 
 document.body.appendChild(App())
