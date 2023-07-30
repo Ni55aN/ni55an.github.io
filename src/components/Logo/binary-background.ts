@@ -12,9 +12,9 @@ export class BinaryBackground {
     ctx: CanvasRenderingContext2D;
 
     text = new Uint8Array()
-    offsetW: any;
-    offsetH: any;
-    hidedText: any;
+    offsetW!: Uint16Array;
+    offsetH!: Uint16Array;
+    hidedText!: number[];
 
     constructor(private stringMask: string) {
         const canvas2d = new Canvas2D()
@@ -88,7 +88,7 @@ export class BinaryBackground {
         }
 
         return list;
-    };
+    }
 
     render(elapsed: number, duration: number) {
         const drawlist = this.getDrawnContenders(elapsed, duration);

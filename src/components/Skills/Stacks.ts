@@ -4,8 +4,8 @@ import { Item } from './types'
 import { SkillGroup } from '../../consts/skills'
 import { map } from 'rxjs/operators'
 import { Progress } from './Progress'
-import { getArrayChanges, delayRemove } from '../../utils/dynamic-array'
-import { pipe } from 'rxjs'
+import { getArrayChanges } from '../../utils/dynamic-array'
+// import { pipe } from 'rxjs'
 
 const skillsStacksStyles = css({
   $name: 'Stacks',
@@ -54,12 +54,12 @@ export function Stack(list: $<Item[]>, group: SkillGroup) {
         added.forEach(skill => skills.insert({ name: skill.name, value: $(skill.value) }))
         removed.forEach(skill => skills.remove(skill))
         former.forEach(skill => skill.value.next(updatedSkills.find(item => item.name === skill.name)?.value || 0))
-    
+
         return null
       })
     ),
     h('div', {}, injectStyles(stackStyles),
-      $for(skills, pipe(delayRemove(3000), map(([props, removed]) => Progress({ ...props, removed }))), { detached: true })
+      $for(skills, v => Progress({ ...v, removed: $(false) }))//pipe(/*delayRemove(3000), */map(([props, removed]) => Progress({ ...props, removed }))))
     )
   )
 }

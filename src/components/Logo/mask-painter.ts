@@ -6,28 +6,28 @@ const PEN_WIDTH = 35;
 
 export class MaskPainter {
   points: [number, number][]
-  pickedPoint: any = null;
+  pickedPoint: number | null = null;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
 
   lastIndex = 0;
   lastTime = 0;
 
-  constructor(private duration: any, private DURATION: number, public isEditMode = false) {
+  constructor(private duration: () => number, private DURATION: number, public isEditMode = false) {
     const canvas2d = new Canvas2D()
     this.canvas = canvas2d.canvas
     this.canvas.width = 512;
     this.canvas.height = 512;
     this.ctx = canvas2d.ctx
-    
+
     this.points = points as [number, number][]
-  };
+  }
 
 
   addPoint(x: number, y: number) {
     this.points.push([x, y]);
     this.pickedPoint = this.points.length - 1;
-  };
+  }
 
 
   pickPoint(x: number, y: number) {
@@ -37,7 +37,7 @@ export class MaskPainter {
         return true;
       }
     return null;
-  };
+  }
 
   setPoint(i: number, x: number, y: number) {
     this.points[i] = [x, y];
@@ -58,7 +58,7 @@ export class MaskPainter {
 
 
     this.ctx.stroke();
-  };
+  }
 
   get() {
     return this.canvas;
@@ -132,7 +132,7 @@ export class MaskPainter {
 
   clear() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-  };
+  }
 }
 
 export class MaskEditor {
@@ -142,8 +142,8 @@ export class MaskEditor {
 
   mousedown(e: MouseEvent) {
     if (this.mask.isEditMode) {
-      var svgCoordinatesX = (e.offsetX - this.svg.getOffsetX()) / this.svg.getSize() * 512;
-      var svgCoordinatesY = (e.offsetY - this.svg.getOffsetY()) / this.svg.getSize() * 512;
+      const svgCoordinatesX = (e.offsetX - this.svg.getOffsetX()) / this.svg.getSize() * 512;
+      const svgCoordinatesY = (e.offsetY - this.svg.getOffsetY()) / this.svg.getSize() * 512;
 
       if (this.mask.pickPoint(svgCoordinatesX, svgCoordinatesY)) return;
       if (svgCoordinatesX > 0 && svgCoordinatesY > 0 && svgCoordinatesX < 512 && svgCoordinatesY < 512)
@@ -153,14 +153,14 @@ export class MaskEditor {
 
   mousemove(e: MouseEvent) {
     if (this.mask.pickedPoint !== null) {
-      var svgCoordinatesX = (e.offsetX - this.svg.getOffsetX()) / this.svg.getSize() * 512;
-      var svgCoordinatesY = (e.offsetY - this.svg.getOffsetY()) / this.svg.getSize() * 512;
+      const svgCoordinatesX = (e.offsetX - this.svg.getOffsetX()) / this.svg.getSize() * 512;
+      const svgCoordinatesY = (e.offsetY - this.svg.getOffsetY()) / this.svg.getSize() * 512;
 
       this.mask.setPoint(this.mask.pickedPoint, svgCoordinatesX, svgCoordinatesY);
     }
   }
 
-  mouseup(e: MouseEvent) {
+  mouseup() {
     this.mask.unpick();
   }
 
@@ -172,8 +172,8 @@ export class MaskEditor {
       console.log('editor mode: ' + this.mask.isEditMode);
     } else if (e.keyCode == 18) {
       if (this.mask.isEditMode) {
-        var out = '';
-        for (var i = 0; i < this.mask.points.length; i++)
+        let out = '';
+        for (let i = 0; i < this.mask.points.length; i++)
           out += '[' + this.mask.points[i][0] + ',' + this.mask.points[i][1] + '],';
 
         console.log('[' + out + ']');
@@ -195,7 +195,7 @@ export class SVG {
 
   constructor(url: string, onload: () => void) {
     const canvas2d = new Canvas2D()
-  
+
     this.canvas = canvas2d.canvas
     this.ctx = canvas2d.ctx
 
@@ -210,7 +210,7 @@ export class SVG {
 
   getOffsetX() {
     return this.center.x;
-  };
+  }
 
   getOffsetY() {
     return this.center.y;
@@ -227,7 +227,7 @@ export class SVG {
 
     this.center.x = width / 2 - this.size / 2;
     this.center.y = height / 2 - this.size / 2;
-  };
+  }
 
 
   render(mask: MaskPainter) {

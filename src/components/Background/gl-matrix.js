@@ -1,10 +1,11 @@
+/* eslint-disable no-undef */
 export var mat4 = {};
 export var vec3 = {};
 export var vec2 = {};
 
 mat4.create = function(){
-	
-	
+
+
 	return [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
 }
 
@@ -125,24 +126,23 @@ mat4.makeRotationX = function(theta) {
             0, 0, 0, 1
         ];
  };
- 
- 
+
+
 mat4.makeRotationY = function ( theta ) {
-	
-	
+
+
 		var c = Math.cos( theta ), s = Math.sin( theta );
 
 		return [
-
-			 c, 0, s, 0,
-			 0, 1, 0, 0,
+			c, 0, s, 0,
+			0, 1, 0, 0,
 			- s, 0, c, 0,
-			 0, 0, 0, 1
-			 ];
+			0, 0, 0, 1
+		];
 
 }
-	
-	
+
+
 
     mat4.multiply = function(a, b) {
 

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-ignore
 import { MonotonicCubicSpline } from './spline';
 import { Item } from '../types';
 import { computeSkillDegradation } from './degradation';
@@ -12,8 +15,8 @@ export function extractSpline(skillName: Item['name'], values: { [key: string]: 
   const pointsX = []
   const pointsY = []
 
-  for (let time in values)
-    for (let name in values[time]) {
+  for (const time in values)
+    for (const name in values[time]) {
       if (skillName == name) {
         pointsX.push(Date.parse(time))
         pointsY.push(values[time][name])

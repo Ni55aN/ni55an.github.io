@@ -1,7 +1,7 @@
 
 export function lightness(k: number) {
   return 'rgba(255,255,255,' + k + ')';
-};
+}
 
 export function overlayGradient(ctx: CanvasRenderingContext2D, width: number, height: number) {
   const gradient = ctx.createLinearGradient(0, 0, width, height);
@@ -11,4 +11,4 @@ export function overlayGradient(ctx: CanvasRenderingContext2D, width: number, he
 
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
-};
+}

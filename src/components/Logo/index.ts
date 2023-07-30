@@ -6,6 +6,7 @@ import { overlayGradient } from './gradient'
 import { Canvas2D } from '../../utils/canvas'
 import refreshImg from '../../assets/img/refresh.png'
 import logoImg from '../../assets/svg/logo.svg'
+import { tap } from 'rxjs/operators'
 
 const refreshButtonStyles = css({
     $name: 'refreshButton',
@@ -31,7 +32,7 @@ export function Logo({ text, duration, ondone, debug }: { text: string; duration
     });
     const editor = new MaskEditor(mask, svg)
 
-    const refreshButton = h('img', { src: refreshImg, click: refresh, className: refreshButtonStyles.className })
+    const refreshButton = h('img', { src: refreshImg, click: tap(refresh), className: refreshButtonStyles.className })
     container.appendChild(refreshButton)
     container.appendChild(canvas)
 
@@ -44,7 +45,7 @@ export function Logo({ text, duration, ondone, debug }: { text: string; duration
 
     canvas.addEventListener('mousedown', e => debug && editor.mousedown(e))
     canvas.addEventListener('mousemove', e => debug && editor.mousemove(e))
-    canvas.addEventListener('mouseup', e => debug && editor.mouseup(e))
+    canvas.addEventListener('mouseup', () => debug && editor.mouseup())
 
     const handleKeydown = (e: KeyboardEvent) => debug && editor.keydown(e)
     onMount(container, () => window.addEventListener('keydown', handleKeydown))
@@ -56,7 +57,7 @@ export function Logo({ text, duration, ondone, debug }: { text: string; duration
     function resize() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        var size = canvas.width * 0.1 + 200;
+        const size = canvas.width * 0.1 + 200;
         svg.setSize(size, { width: canvas.width, height: canvas.height });
 
         clear();
@@ -84,7 +85,7 @@ export function Logo({ text, duration, ondone, debug }: { text: string; duration
 
     function renderAnimate() {
         requestAnimationFrame(renderAnimate);
-        
+
         if (getElapsedTime() >= duration && ondone) {
             ondone();
         }

@@ -24,7 +24,7 @@ export function Page(...content: Child[]) {
 }
 
 const pageHeadStyles = css({
-  gridArea: 'head' 
+  gridArea: 'head'
 })
 
 export function PageHead(...content: Child[]) {
@@ -40,7 +40,7 @@ const pageTitleStyles = css({
   display: 'block',
   lineHeight: '64px',
   fontStyle: 'normal',
-  gridArea: 'title' 
+  gridArea: 'title'
 })
 
 export function PageTitle(...content: Child[]) {

@@ -31,13 +31,15 @@ const progressIndicator = css({
 export function Progress({ name, value, removed }: { name: string, value: $<number>, removed: Observable<boolean> }) {
   const mounted = $(false)
   const collapsed = combineLatest(removed, mounted).pipe(map(([a, b]) => a === b))
-  
-  return h('div', {},
+
+  const el = h('div', {},
     injectStyles(progressStyles, css({ height: collapsed.pipe(map(c => c ? '0' : '1.8em')), opacity: collapsed.pipe(map(c => c ? '0' : '1')) })),
-    onMount(() => setTimeout(() => {mounted.next(true)})),
     h('div', {}, injectStyles(progressLabelStyles), name),
     h('div', {}, injectStyles(progressIndicator),
-      h('div', { style: value.pipe(map(v => `background-color: #f9950c; height: 100%; width: ${v*100}%`)) },)
+      h('div', { style: value.pipe(map(v => `background-color: #f9950c; height: 100%; width: ${v * 100}%`)) },)
     )
   )
+  onMount(el, () => setTimeout(() => { mounted.next(true) }))
+
+  return el
 }

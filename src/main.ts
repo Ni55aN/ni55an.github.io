@@ -7,7 +7,7 @@ import 'normalize.css'
 import { Work } from './components/Work'
 import { Contact } from './components/Contact'
 import './analytics'
-import { usePageScroll } from './utils/scroll'
+// import { usePageScroll } from './utils/scroll'
 import { Background } from './components/Background'
 import bgImg from './assets/img/bg.jpg'
 import './assets/fonts/amplify.css'
@@ -53,9 +53,11 @@ function PageWithLogo(...content: Child[]) {
 function App() {
   const pages = [
     PageWithLogo(
-      Logo({ text: 'Vitaliy Stolyarov', duration: 3000, ondone() {
-        // setTimeout(() => scroll.top === 0 && scroll.down(), 1000) // TODO
-      }})
+      Logo({
+        text: 'Vitaliy Stolyarov', duration: 3000, ondone() {
+          // setTimeout(() => scroll.top === 0 && scroll.down(), 1000) // TODO
+        }
+      })
     ),
     Page(
       PageTitle('About'),
@@ -78,19 +80,22 @@ function App() {
     )
   ]
 
-  const scroll = usePageScroll(pages, 1 / 10)
+  // const scroll = usePageScroll(pages, 1 / 10)
   const background = new Background()
 
-  return h('div', {},
-    onMount(() => {
-      background.init()
-      scroll.mount()
-    }),
-    onDestroy(() => {
-      scroll.destroy()
-    }),
+  const el = h('div', {},
     pages
   )
+
+
+  onMount(el, () => {
+    background.init()
+    // scroll.mount()
+  }),
+    onDestroy(el, () => {
+      // scroll.destroy()
+    })
+  return el
 }
 
 document.body.appendChild(App())

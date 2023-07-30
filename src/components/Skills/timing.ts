@@ -6,8 +6,9 @@ import { extractCachedSpline } from './spline/index';
 const FROM_YEAR = 2011
 const UNTIL_YEAR = new Date().getFullYear()
 
-export function SkillsTiming(skills: {[key: string]: {[name: string]: number}}, props: { change?: (items: Item[]) => void } = {}) {
-  const skillNames = Object.keys(Object.entries(skills).reduce((acc, [time, skills]) => ({ ...acc, ...skills }), {}))
+export function SkillsTiming(skills: { [key: string]: { [name: string]: number } }, props: { change?: (items: Item[]) => void } = {}) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const skillNames = Object.keys(Object.entries(skills).reduce((acc, [_time, skills]) => ({ ...acc, ...skills }), {}))
 
   function update(time: string | number) {
     const skillValues = skillNames.map(name => {

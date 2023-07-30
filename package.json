@@ -1,9 +1,12 @@
 {
   "name": "ni55an.github.io",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "webpack-dev-server",
-    "build": "webpack"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint --fix"
   },
   "repository": {
     "type": "git",
@@ -16,23 +19,19 @@
   },
   "homepage": "https://github.com/Ni55aN/ni55an.github.io#readme",
   "dependencies": {
-    "easyhard": "^0.4.7",
-    "easyhard-styles": "^0.1.4",
+    "delaunator": "^5.0.0",
+    "easyhard": "^0.9.2",
+    "easyhard-styles": "^0.4.0",
     "normalize.css": "^8.0.1",
-    "rxjs": "^6.5.5"
+    "rxjs": "^6.6.7"
   },
   "devDependencies": {
-    "@beyonk/google-fonts-webpack-plugin": "^1.2.3",
-    "css-loader": "^3.6.0",
-    "favicons-webpack-plugin": "^3.0.1",
-    "file-loader": "^6.0.0",
-    "google-fonts-plugin": "^5.0.2",
-    "html-webpack-plugin": "^4.3.0",
-    "style-loader": "^1.2.1",
-    "ts-loader": "^7.0.5",
-    "typescript": "^3.9.5",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0"
+    "@types/delaunator": "^5.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.2.0",
+    "@typescript-eslint/parser": "^6.2.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5",
+    "vite-plugin-checker": "^0.6.1",
+    "vite-plugin-eslint": "^1.8.1"
   }
 }

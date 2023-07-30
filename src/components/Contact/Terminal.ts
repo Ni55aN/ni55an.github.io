@@ -1,6 +1,6 @@
 import { Attrs, h, $for, $$, Child } from 'easyhard'
 import { injectStyles } from 'easyhard-styles'
-import { map } from 'rxjs/operators'
+import { tap } from 'rxjs/operators'
 import { commands } from '../../consts/cmd'
 import backgroundImg from '../../assets/img/ubuntu-bg.png'
 import buttonsImg from '../../assets/img/ubuntu-buttons.png'
@@ -46,7 +46,7 @@ function Window(...children: Child[]) {
       height: '40vh',
       overflow: 'auto'
     }),
-    ...children
+      ...children
     )
   )
 }
@@ -70,25 +70,27 @@ export function Terminal({ name, path }: { name: string; path: string }) {
   }
 
   function cmd(command: string) {
-      var chunk = command.split(' ');
-      var name = chunk[0];
-      var response = commands[name];
+    const chunk = command.split(' ');
+    const name = chunk[0];
+    const response = commands[name];
 
-      if (response)
-          print(response);
-      else
-          print(name + " is not recognized as an internal or external command");
+    if (response)
+      print(response);
+    else
+      print(name + " is not recognized as an internal or external command");
   }
 
   return Window(
-    h('div', {}, $for(output, map(item => Line(item)))),
-    Line(injectStyles({ display: 'flex'}), `${name}: ${path}$`, Input({ keydown(e) {
-      if ((e as KeyboardEvent).keyCode == 13) {
-        const input = (e as KeyboardEvent).target as HTMLInputElement
-        print(`${name}: ${path}$ ${input.value}`)
-        cmd(input.value);
-        input.value = "";
-      }
-    }}))
+    h('div', {}, $for(output, item => Line(item))),
+    Line(injectStyles({ display: 'flex' }), `${name}: ${path}$`, Input({
+      keydown: tap((e) => {
+        if ((e as KeyboardEvent).keyCode == 13) {
+          const input = (e as KeyboardEvent).target as HTMLInputElement
+          print(`${name}: ${path}$ ${input.value}`)
+          cmd(input.value);
+          input.value = "";
+        }
+      })
+    }))
   )
 }
