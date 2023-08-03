@@ -10,7 +10,7 @@ I'm Vitaliy Stoliarov, a software engineer from Ukraine with a programming journ
 Creator of Rete.js, a TypeScript-first framework for visual programming.\
 `
 const image = 'https://ni55an.dev/preview.png'
-const author = '@ni55an_dev'
+const author = 'ni55an_dev'
 
 const htmlOptions: Options = {
   metas: [
