@@ -3,7 +3,7 @@ import { css, injectStyles } from 'easyhard-styles'
 import { Item } from './types'
 import { SkillGroup } from '../../consts/skills'
 import { map } from 'rxjs/operators'
-import { Progress } from './Progress'
+// import { Progress } from './Progress'
 import { getArrayChanges } from '../../utils/dynamic-array'
 // import { pipe } from 'rxjs'
 
@@ -12,12 +12,19 @@ const skillsStacksStyles = css({
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
   gridTemplateRows: '1fr',
-  overflow: 'auto'
+  overflow: 'auto',
+  flex: '1',
+  '@media': {
+    query: {
+      maxWidth: '500px'
+    },
+    display: 'block'
+  }
 })
 
 const scrollStyles = css({
   $name: 'Scroll',
-  overflowY: 'auto',
+  overflow: 'auto',
   webkitMaskImage: 'linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0) 100%)'
 })
 
@@ -33,7 +40,9 @@ const stackStyles = css({
   minHeight: '100%',
   padding: '1em 0',
   boxSizing: 'border-box',
-  minWidth: '22em'
+  fontSize: '1.2em',
+  textAlign: 'center',
+  overflowX: 'hidden',
 })
 
 function getSkillsForGroup(group: SkillGroup) {
@@ -59,7 +68,16 @@ export function Stack(list: $<Item[]>, group: SkillGroup) {
       })
     ),
     h('div', {}, injectStyles(stackStyles),
-      $for(skills, v => Progress({ ...v, removed: $(false) }))//pipe(/*delayRemove(3000), */map(([props, removed]) => Progress({ ...props, removed }))))
+      $for(skills, v => h('div', {
+        style: v.value.pipe(map(value => {
+          return `
+            opacity: ${value / (1 - group.threshold) - group.threshold};
+            order: ${Math.floor(-value * 100)};
+            margin: 0.5em 1em;
+            transformOrigin: 50% 50%;
+          `
+        }))
+      }, v.name))
     )
   )
 }

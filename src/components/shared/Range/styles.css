@@ -3,6 +3,7 @@
   padding: 5px;
   background: transparent;
   -webkit-appearance: none;
+  box-sizing: border-box;
   outline: none;
 }
 
@@ -12,18 +13,21 @@
   border: none;
   border-radius: 2px;
 }
+
 .range::-moz-range-track {
   height: 2px;
   background: #ddd;
   border: none;
   border-radius: 2px;
 }
+
 .range::-ms-track {
   height: 2px;
   background: #ddd;
   border: none;
   border-radius: 2px;
 }
+
 .range::-webkit-slider-thumb {
   -webkit-appearance: none;
   border: none;
@@ -33,6 +37,7 @@
   background: #888;
   margin-top: -6px;
 }
+
 .range::-moz-range-thumb {
   border: none;
   height: 14px;
@@ -41,6 +46,7 @@
   background: #888;
   margin-top: -6px;
 }
+
 .range::-ms-thumb {
   border: none;
   height: 14px;
@@ -49,12 +55,15 @@
   background: #888;
   margin-top: -6px;
 }
+
 .range::-webkit-slider-thumb:active {
   background: gray;
 }
+
 .range::-webkit-slider-thumb:active {
   box-shadow: 0 0 2px gray;
 }
+
 .range:focus {
   outline: none;
 }

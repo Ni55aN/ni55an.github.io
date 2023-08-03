@@ -1,21 +1,23 @@
 import { h } from 'easyhard'
-import { Terminal } from './Terminal'
+import { injectStyles } from 'easyhard-styles'
 import { Social, SocialItem } from './Social'
-import vkImg from '../../assets/img/social/vk.png'
-import telegramImg from '../../assets/img/social/telegram.png'
-import askfmImg from '../../assets/img/social/askfm.png'
-import wiselikeImg from '../../assets/img/social/wiselike.png'
-import inImg from '../../assets/img/social/in.png'
+import { Email } from './Email'
 
 export function Contact() {
   return h('div', {},
-    Terminal({ name: "Ni55aN@github", path: '~' }),
+    injectStyles({
+      display: 'flex',
+      height: '100%',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      gap: '1em'
+    }),
     Social(
-      SocialItem({ link: 'http://vk.com/ni55an', img: vkImg }),
-      SocialItem({ link: 'https://telegram.me/Ni55aN', img: telegramImg }),
-      SocialItem({ link: 'http://ask.fm/Ni55aN', img: askfmImg }),
-      SocialItem({ link: 'https://wiselike.com/vitalij-stolyarov', img: wiselikeImg }),
-      SocialItem({ link: 'https://www.linkedin.com/in/ni55an', img: inImg }),
-    )
+      SocialItem({ title: 'GitHub', icon: 'github', link: 'https://github.com/ni55an' }),
+      SocialItem({ title: 'Twitter', icon: 'twitter', link: 'https://twitter.com/ni55an_dev' }),
+      SocialItem({ title: 'LinkedIn', icon: 'linkedin', link: 'https://www.linkedin.com/in/ni55an' }),
+      SocialItem({ title: 'Medium', icon: 'medium', link: 'https://medium.com/@ni55an' })
+    ),
+    Email()
   )
 }

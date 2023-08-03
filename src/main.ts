@@ -1,24 +1,23 @@
-import { h, Child, onMount, onDestroy } from 'easyhard'
-import { Page, PageTitle, PageContent, PageHead } from './components/shared/Page'
-import { injectStyles, css } from 'easyhard-styles'
-import { Logo } from './components/Logo'
-import { Skills } from './components/Skills'
+import { $, h } from 'easyhard'
+import { Page } from './components/shared/Page'
+import { css } from 'easyhard-styles'
 import 'normalize.css'
-import { Work } from './components/Work'
+import './assets/fonts/index.css'
+import './assets/styles.css'
+import { Logo } from './components/Logo'
+import { Menu } from './components/Menu'
+import { Skills } from './components/Skills'
+import { map, tap } from 'rxjs/operators'
+import { Frame } from './components/Frame'
+import { Resume } from './components/Resume'
 import { Contact } from './components/Contact'
-import './analytics'
-// import { usePageScroll } from './utils/scroll'
-import { Background } from './components/Background'
-import bgImg from './assets/img/bg.jpg'
-import './assets/fonts/amplify.css'
+import { About } from './components/About'
 
 const bodyStyles = css({
   position: 'relative',
   margin: '0 auto',
-  // overflowX: 'hidden',
   height: '100%',
   width: '100%',
-  backgroundImage: `url('${bgImg}')`,
   backgroundSize: '100%',
   backgroundAttachment: 'fixed',
   fontStyle: 'italic',
@@ -27,75 +26,30 @@ const bodyStyles = css({
 
 document.body.classList.add(bodyStyles.className)
 
-const bioStyles = css({
-  textAlign: 'justify',
-  display: 'block',
-  color: '#888',
-  padding: '5%',
-  maxWidth: '380px',
-  width: '40%',
-  margin: 'auto'
-})
-
-function Bio() {
-  return h('div', {}, injectStyles(bioStyles),
-    'Hello, my name is Vitaliy Stoliarov. I\'m a Full Stack developer from Ukraine, intrested in programming, design and technology. I like cars, music, films and videogames.'
-  )
-}
-
-function PageWithLogo(...content: Child[]) {
-  return Page(
-    injectStyles({ padding: 0 }),
-    ...content
-  )
-}
 
 function App() {
-  const pages = [
-    PageWithLogo(
+  const active = $<string | null>(null)
+
+  return h('div', { style: 'height: 100%' },
+    Menu({
+      active,
+      select(id) {
+        active.next(active.value === id ? null : id)
+      },
+    }),
+    Page(
+      { click: tap(() => active.next(null)) },
       Logo({
-        text: 'Vitaliy Stolyarov', duration: 3000, ondone() {
-          // setTimeout(() => scroll.top === 0 && scroll.down(), 1000) // TODO
-        }
+        opacity: active.pipe(map(active => active ? 0 : 1)),
+        text: 'Vitaliy Stoliarov',
+        duration: 3000
       })
     ),
-    Page(
-      PageTitle('About'),
-      PageHead(Bio()),
-      PageContent(
-        Skills()
-      )
-    ),
-    Page(
-      PageTitle('Work'),
-      PageContent(
-        Work()
-      )
-    ),
-    Page(
-      PageTitle('Contact'),
-      PageContent(
-        Contact()
-      )
-    )
-  ]
-
-  // const scroll = usePageScroll(pages, 1 / 10)
-  const background = new Background()
-
-  const el = h('div', {},
-    pages
+    Frame({ open: active.pipe(map(id => id === 'about')) }, About()),
+    Frame({ open: active.pipe(map(id => id === 'skills')) }, Skills()),
+    Frame({ open: active.pipe(map(id => id === 'resume')) }, Resume()),
+    Frame({ open: active.pipe(map(id => id === 'contact')) }, Contact())
   )
-
-
-  onMount(el, () => {
-    background.init()
-    // scroll.mount()
-  }),
-    onDestroy(el, () => {
-      // scroll.destroy()
-    })
-  return el
 }
 
 document.body.appendChild(App())

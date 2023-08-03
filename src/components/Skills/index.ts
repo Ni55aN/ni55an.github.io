@@ -9,8 +9,9 @@ import { Item } from './types'
 const styles = css({
   $name: 'Skills',
   height: '100%',
-  display: 'grid',
-  gridTemplateRows: '1fr auto'
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'hidden',
 })
 
 export function Skills() {
@@ -20,7 +21,6 @@ export function Skills() {
     Stacks(
       Stack(list, groups.languages),
       Stack(list, groups.techs),
-      Stack(list, groups.devops),
       Stack(list, groups.tools)
     ),
     SkillsTiming(skills, { change(value) { list.next(value) } })

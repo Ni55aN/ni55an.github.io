@@ -4,7 +4,7 @@ import { css, injectStyles } from 'easyhard-styles';
 import { map, tap } from 'rxjs/operators';
 
 const styles = css({
-  margin: '1em 0'
+  marginTop: '1em'
 })
 
 const labelsStyles = css({
@@ -18,8 +18,16 @@ const labelsStyles = css({
 
 export function TimingRange({ from, until, value, labels, change }: { from: number; until: number; value: number; labels: string[]; change: (value: string) => void }) {
   const active = $(false)
+  const evenLabel = css({
+    '@media': {
+      query: {
+        maxWidth: '500px'
+      },
+      display: 'none'
+    }
+  })
 
-  return h('div', { mouseenter: tap(() => { active.next(true) }), mouseleave: tap(() => { active.next(false) }) }, injectStyles(styles),
+  return h('div', { pointerenter: tap(() => { active.next(true) }), pointerleave: tap(() => { active.next(false) }) }, injectStyles(styles),
     Range({
       min: from,
       max: until,
@@ -27,6 +35,9 @@ export function TimingRange({ from, until, value, labels, change }: { from: numb
       change: tap((e) => { change((e.target as HTMLInputElement).value); }),
       mousemove: tap((e) => { if ((e as MouseEvent).buttons > 0) change((e.target as HTMLInputElement).value); })
     }),
-    h('div', { style: active.pipe(map(act => `opacity: ${act ? '100' : '0'}`)) }, injectStyles(labelsStyles), labels.map(label => h('div', {}, label)))
+    h('div', { style: active.pipe(map(act => `opacity: ${act ? '1' : '0.5'}`)) },
+      injectStyles(labelsStyles),
+      labels.map((label, i) => h('div', {}, i % 2 !== 0 ? injectStyles(evenLabel) : null, label))
+    )
   )
 }

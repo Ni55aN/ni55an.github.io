@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg width="336" height="336" viewBox="-1 -1 116 116" version="1.1" xml:space="preserve" sodipodi:docname="mask.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+   <g>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:16;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="m 0,43 1,31">
+         <animate dur="0.25s" begin="0s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:7.25994887;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="M 3.5547646,45.580514 19.800676,68.083009">
+         <animate dur="0.25s" begin="0.166666s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="m 21.556736,44.422807 0.465013,26.147555">
+         <animate dur="0.25s" begin="0.333333s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:11;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="m 28.760829,52.391474 0.15809,19">
+         <animate dur="0.25s" begin="0.5s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:8;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="m 25.963771,48.411983 c 2.239936,0.255823 4.966325,0.441198 9.645152,0.148409">
+         <animate dur="0.25s" begin="0.666666s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:7.25995;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="m 37.166696,46.581503 0,15.052138">
+         <animate dur="0.15s" begin="0.833333s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;fill-opacity:0.00974025;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="m 34.330027,58.406156 c 0,0 16,0 13,4.163215 -0.726405,6.833509 -5.626523,4.064253 -13.959677,4.039267">
+         <animate dur="0.45s" begin="0.9s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:9;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="m 34.259744,51.260962 c 4.948521,0.293503 10.631369,-0.595221 16.49547,-0.521793">
+         <animate dur="0.15s" begin="1.266666s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:7.25994887;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="M 54.85946,47.012064 54.603377,60">
+         <animate dur="0.15s" begin="1.333333s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="m 51.813215,58.692798 c 0,0 14.631861,-1.474825 11.82124,4.77334 -0.766988,7.495144 -10.614528,5.806739 -13.614528,4.806739">
+         <animate dur="0.45s" begin="1.4s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:9.4;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="m 51.609601,51.071555 c 4.513629,0.201307 10.784034,-0.343387 16.455761,-0.0236">
+         <animate dur="0.15s" begin="1.766666s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:9.4;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="m 81.552532,54.609523 c 0,0 -8.338298,-1.115716 -8.700628,5.941801 -0.356579,9.929633 6.781539,6.280022 8.281539,6.380022">
+         <animate dur="0.35s" begin="1.833333s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:9;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="M 83.839617,51.331795 84.249255,72.039587">
+         <animate dur="0.15s" begin="2.1s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:9.7;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="m 91.648973,44.75777 c -0.05887,8.209843 0,16.405947 0.5,25.721922">
+         <animate dur="0.25s" begin="2.166666s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:7.25994887;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="M 89.505949,42.90498 111.10083,72.4">
+         <animate dur="0.25s" begin="2.333333s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:8.9;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:40,40;stroke-dashoffset:40;paint-order:normal"
+         d="M 109.4,42.412127 109.4,70.2">
+         <animate dur="0.25s" begin="2.5s" attributeName="stroke-dashoffset" values="40; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:16;stroke-linecap:butt;stroke-linejoin:bevel;paint-order:normal;stroke-dasharray:140,140;stroke-dashoffset:140;"
+         d="m 11.077245,56.599143 c 0,0 4.325933,43.871457 43.968996,44.131367 35.437377,0.23235 45.708579,-29.083737 46,-42.666741">
+         <animate dur="0.25s" begin="2.666666s" attributeName="stroke-dashoffset" values="140; 0" restart="never"
+            fill="freeze" />
+      </path>
+      <path
+         style="mix-blend-mode:normal;fill:none;fill-opacity:0;stroke:#000000;stroke-width:16;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:145,164;stroke-dashoffset:145;paint-order:fill markers stroke;opacity:1;"
+         d="m 100.8017,58.344199 c 0,0 0.829311,-47.161338 -43.468605,-48.421935 C 21.899087,11.689319 4.501871,59.216261 18.056153,64.33937">
+         <animate dur="0.25s" begin="2.833333s" attributeName="stroke-dashoffset" values="145; 0" restart="never"
+            fill="freeze" />
+      </path>
+   </g>
+</svg>

@@ -1,97 +1,236 @@
-import { h, onDestroy, onMount } from 'easyhard'
-import { css } from 'easyhard-styles'
-import { MaskPainter, SVG, MaskEditor } from './mask-painter'
-import { BinaryBackground } from './binary-background'
-import { overlayGradient } from './gradient'
-import { Canvas2D } from '../../utils/canvas'
-import refreshImg from '../../assets/img/refresh.png'
-import logoImg from '../../assets/svg/logo.svg'
-import { tap } from 'rxjs/operators'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { h, onMount } from 'easyhard'
+import { injectStyles } from 'easyhard-styles'
+import { getBinaryBackground } from './binary-background'
+import { Application } from '@pixi/app'
+import { TextStyle, Text } from '@pixi/text'
+import { Container } from '@pixi/display'
+import { Graphics } from '@pixi/graphics'
+import animejs, { AnimeInstance } from 'animejs'
+import { createOverlayGradient } from './gradient'
+import { Observable } from 'rxjs'
+import { map } from 'rxjs/operators'
+import { debounce } from 'lodash-es'
 
-const refreshButtonStyles = css({
-    $name: 'refreshButton',
-    position: 'absolute',
-    right: '15px',
-    bottom: '15px',
-    padding: '5px',
-    width: '20px',
-    cursor: 'pointer'
-})
-
-export function Logo({ text, duration, ondone, debug }: { text: string; duration: number; debug?: boolean; ondone?: () => void }) {
+export function Logo({ text, opacity, duration }: { text: string; opacity: Observable<number>, duration: number }) {
     const container = document.createElement('div')
-    const { canvas, ctx } = new Canvas2D()
 
-    let startTime: number = 0;
-    const mask = new MaskPainter(getElapsedTime, duration, debug);
-    const background = new BinaryBackground(text);
-    const svg = new SVG(logoImg, function () {
-        startTime = new Date().getTime();
-        resize();
-        renderAnimate();
-    });
-    const editor = new MaskEditor(mask, svg)
+    onMount(container, () => {
+        const resize = debounce(() => {
+            app.renderer.resize(window.innerWidth, window.innerHeight)
+            addDigits()
+        }, 500)
+        window.addEventListener('resize', resize)
 
-    const refreshButton = h('img', { src: refreshImg, click: tap(refresh), className: refreshButtonStyles.className })
-    container.appendChild(refreshButton)
-    container.appendChild(canvas)
+        return () => window.removeEventListener('resize', resize)
+    })
 
-    function refresh() {
-        startTime = new Date().getTime();
-        background.reinit(canvas.width, canvas.height);
+    const canvasBg = h('canvas', {},
+        injectStyles({
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            zIndex: '4'
+        })
+    )
+    const app = new Application({
+        view: canvasBg,
+        backgroundAlpha: 0,
+        width: window.innerWidth,
+        height: window.innerHeight,
+        antialias: true,
+    })
+    const bg = new Container()
 
-        mask.clear();
-    }
+    bg.zIndex = 4
 
-    canvas.addEventListener('mousedown', e => debug && editor.mousedown(e))
-    canvas.addEventListener('mousemove', e => debug && editor.mousemove(e))
-    canvas.addEventListener('mouseup', () => debug && editor.mouseup())
+    app.stage.sortableChildren = true
 
-    const handleKeydown = (e: KeyboardEvent) => debug && editor.keydown(e)
-    onMount(container, () => window.addEventListener('keydown', handleKeydown))
-    onDestroy(container, () => window.removeEventListener('keydown', handleKeydown))
+    app.stage.addChild(bg)
 
-    onMount(container, () => window.addEventListener('resize', resize))
-    onDestroy(container, () => window.removeEventListener('resize', resize))
+    const shadeGradient = new Graphics()
 
-    function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        const size = canvas.width * 0.1 + 200;
-        svg.setSize(size, { width: canvas.width, height: canvas.height });
+    shadeGradient.endFill()
 
-        clear();
-        background.reinit(canvas.width, canvas.height);
-        render()
-    }
+    let animation: AnimeInstance
 
-    function getElapsedTime() {
-        return new Date().getTime() - startTime;
-    }
+    async function addDigits(animate?: boolean) {
+        bg.removeChildren()
 
-    function clear() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
+        const fontSize = 20
+        const style = new TextStyle({
+            fontSize: fontSize + 'px',
+            fill: 'rgb(207 207 207)',
+            fontFamily: 'serif'
+        });
 
-    function render() {
-        const bg = background.render(getElapsedTime(), duration);
-        ctx.drawImage(bg, 0, 0);
-
-        overlayGradient(ctx, canvas.width, canvas.height);
-
-        const img = svg.render(mask);
-        ctx.drawImage(img, svg.center.x, svg.center.y);
-    }
-
-    function renderAnimate() {
-        requestAnimationFrame(renderAnimate);
-
-        if (getElapsedTime() >= duration && ondone) {
-            ondone();
+        const data = {
+            background: null as ReturnType<typeof getBinaryBackground> | null,
+            indices: null as null | number[]
         }
-        clear();
-        render()
+        if (!animate) {
+            if (animation) animation.pause()
+            init()
+            step(1)
+            return
+        }
+        if (animation) {
+            animation.duration = duration
+            animation.restart()
+            return
+        }
+        const targets = {
+            t: 0
+        }
+
+        function init() {
+            data.background = getBinaryBackground(text, {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                offset: [5, 5],
+                lineHeight: 22,
+                fontSize: fontSize
+            })
+            data.indices = new Array(data.background.text.length).fill(0).map((_, i) => i)
+        }
+        function step(t: number) {
+            const { background, indices } = data
+            if (!background) return
+            if (!indices) return
+
+            const k = 1 - indices.length / background.text.length
+
+            const length = Math.floor((t - k) * background.text.length)
+            const add = new Array(length).fill(null).map(() => indices.splice(Math.floor(Math.random() * indices.length), 1)[0])
+
+            for (const i of add) {
+                const text = new Text(background.text[i], style)
+                text.x = background.x[i]
+                text.y = background.y[i]
+
+                bg.addChild(text)
+            }
+        }
+
+        animation = animejs({
+            targets,
+            t: 1,
+            duration,
+            easing: 'easeInCubic',
+            loopBegin() {
+                init()
+            },
+            begin() {
+                init()
+            },
+            update() {
+                step(targets.t)
+            },
+        })
     }
+    addDigits(true)
+
+    container.appendChild(canvasBg)
+
+    container.appendChild(createOverlayGradient())
+
+    const masked =
+        h('div', {
+            style: `
+                -webkit-mask-image: url(mask.svg?q=${Math.random()});
+                -webkit-mask-size: 100%;
+                -webkit-mask-repeat: no-repeat;
+                -webkit-mask-position: center;
+            `
+        },
+            injectStyles({
+                $name: 'Masked',
+                position: 'relative',
+                width: '21.6em',
+                height: '21.6em',
+                transform: 'scale(0.7)',
+                transition: 'opacity 0.4s ease-out',
+                opacity: opacity.pipe(map(String))
+            }),
+            h('div', {},
+                injectStyles({
+                    display: 'block',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    boxSizing: 'border-box',
+                    width: '85.9%',
+                    height: '85.9%',
+                    borderRadius: '100%',
+                    border: '1.95em solid white'
+                })
+            ),
+            h('div', {},
+                injectStyles({
+                    display: 'block',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    boxSizing: 'border-box',
+                    width: '83.2%',
+                    height: '83.2%',
+                    borderRadius: '100%',
+                    border: '1.3em solid #6b6b6b'
+                })
+            ),
+            h('div', {
+                style: '-webkit-text-stroke: 0.1em white'
+            },
+                injectStyles({
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    fontFamily: 'Berlin',
+                    fontSize: '6.3em',
+                    fontStyle: 'normal',
+                    pointerEvents: 'none'
+                }),
+                'Ni55aN'
+            ),
+            h('div', {},
+                injectStyles({
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    fontFamily: 'Berlin',
+                    fontSize: '6.3em',
+                    fontStyle: 'normal',
+                    pointerEvents: 'none'
+                }),
+                h('span', {}, injectStyles({ color: '#6b6b6b' }), 'Ni'),
+                h('span', {}, injectStyles({ color: '#f98000' }), '55'),
+                h('span', {}, injectStyles({ color: '#6b6b6b' }), 'aN')
+            )
+        )
+
+    const logoEl = h('div', { style: '' },
+        injectStyles({
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: '15'
+        }),
+        masked
+    )
+    container.appendChild(logoEl)
+
 
     return container
 }
